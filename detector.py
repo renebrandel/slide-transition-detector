@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import argparse
 import cv2
 import os
@@ -142,30 +144,67 @@ class SlidingWindow(object):
         self.size = size
 
     def move_right(self):
+        """
+        This method makes this:
+        ░|░|█|█|░|░ => ░|░|░|█|█|░
+        1 2 3 4 5 6    1 2 3 4 5 6
+        :return: the changed list of frame
+        """
         self.pos += 1
 
     def move_left(self):
+        """
+        This method makes this:
+        ░|░|█|█|░|░ => ░|█|█|░|░|░
+        1 2 3 4 5 6    1 2 3 4 5 6
+        :return: the changed list of frame
+        """
         self.pos -= 1
 
     def shrink_from_left(self):
+        """
+        This method makes this:
+        ░|░|█|█|░|░ => ░|░|░|█|░|░
+        1 2 3 4 5 6    1 2 3 4 5 6
+        :return: the changed list of frame
+        """
         self.pos += 1
         self.size -= 1
 
     def shrink_from_right(self):
+        """
+        This method makes this:
+        ░|░|█|█|░|░ => ░|░|█|░|░|░
+        1 2 3 4 5 6    1 2 3 4 5 6
+        :return: the changed list of frame
+        """
         self.size -= 1
 
-    def expand_from_left(self):
+    def expand_to_left(self):
+        """
+        This method makes this:
+        ░|░|█|█|░|░ => ░|█|█|█|░|░
+        1 2 3 4 5 6    1 2 3 4 5 6
+        :return: the changed list of frame
+        """
         self.pos -= 1
         self.size += 1
 
-    def expand_from_right(self):
+    def expand_to_right(self):
+        """
+        This method makes this:
+        ░|░|█|█|░|░ => ░|░|█|█|█|░
+        1 2 3 4 5 6    1 2 3 4 5 6
+        :return: the changed list of frame
+        """
         self.size += 1
 
-    def action_on_frame(self, action):
-        for frame in self.get_frames():
-            return action(frame)
-
     def get_frames(self):
+        """
+        Retrieves all the frames that are currently in this adaptive
+        sliding window.
+        :return: the frames in the sliding window
+        """
         return self.timeline.get_frames(self.pos, self.pos + self.size)
 
 

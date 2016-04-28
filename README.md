@@ -17,4 +17,4 @@ To clean up all the files generated from the script call
 
 `python cleanup.py`
 
-It will delete all the files in `img/`, `matches/` and `slides/'
+It will delete all the files in `img/`, `matches/` and `slides/`

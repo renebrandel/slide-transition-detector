@@ -2,19 +2,61 @@ import argparse
 import cv2
 import os
 import numpy as np
-from matplotlib import pyplot as plt
 
+class InfiniteCounter:
+
+    def __init__(self, start=0, step=1):
+        self.current = start
+        self.step = step
+
+    def count(self):
+        while True:
+            yield self.current
+            self.current += self.step
 
 class ImageWriter:
 
     def __init__(self, prefix='img ', file_format='.jpg', count=0):
-        self.count = count
         if not file_format.startswith('.'):
             file_format = '.' + file_format
+        self.count = count
         self.name = prefix + '%d' + file_format
 
     def write_image(self, img):
         cv2.imwrite(self.name % self.count, img)
+        self.count += 1
+
+
+class Detector:
+
+    def __init__(self, device):
+        setup_dirs()
+        self.cap = cv2.VideoCapture(sanitize_device(device))
+
+    def detect_slides(self):
+        _, last_frame = self.cap.read()
+
+        slide_writer = ImageWriter('slides/slide ')
+        slide_writer.write_image(last_frame)
+
+        slide_counter = InfiniteCounter()
+
+        for i in slide_counter.count():
+            ret, frame = self.cap.read()
+
+            if not ret:
+                break
+
+            if not are_same(last_frame, frame, i):
+                slide_writer.write_image(frame)
+            last_frame = frame
+
+        self.cap.release()
+
+
+class DetectionStrategy:
+
+    pass
 
 
 def sanitize_device(device):
@@ -23,55 +65,6 @@ def sanitize_device(device):
         return int(device)
     except (TypeError, ValueError):
         return device
-
-
-def main(args):
-    """Main execution function"""
-    setup_dirs()
-
-    # get the video stream
-    cap = cv2.VideoCapture(sanitize_device(args.device))
-
-    # setup output video (if needed)
-    """
-    size = (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)),
-            int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)))
-    fps = cap.get(cv2.CAP_PROP_FPS)
-    codec = cv2.VideoWriter_fourcc('X', '2', '6', '4')
-    out = cv2.VideoWriter(args.outfile, codec, fps, size)
-    """
-
-    _, last_frame = cap.read()
-
-    slide_writer = ImageWriter('slides/slide ')
-    slide_writer.write_image(last_frame)
-
-    interval_writer = ImageWriter('img/out ')
-
-    i = 0
-
-    while True:
-
-        ret, frame = cap.read()
-        if ret:
-            if i % 100 == 0:
-                # every 100th frame it writes the image to disk
-                interval_writer.write_image(frame)
-                # out.write(frame) # write video
-
-            if not are_same(last_frame, frame, i):
-                slide_writer.write_image(frame)
-
-            i += 1
-            last_frame = frame
-        else:
-            break
-    print ('done')
-
-    print i
-    cap.release()
-    # out.release()
-    cv2.destroyAllWindows()
 
 
 def are_same(fst, snd, count):
@@ -100,4 +93,8 @@ if __name__ == "__main__":
     Parser.add_argument("-d", "--device", help="video device number or path to video file")
     Parser.add_argument("-o", "--outfile", help="path to output video file")
     Args = Parser.parse_args()
-    main(Args)
+
+    detector = Detector(Args.device)
+    detector.detect_slides()
+
+    cv2.destroyAllWindows()

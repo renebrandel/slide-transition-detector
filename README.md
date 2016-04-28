@@ -8,7 +8,8 @@ You will need to install OpenCV 3.1.0 and OpenCV Contributions
 ## Usage
 ### Slide Detection
 #### Example:
-`python detector.py -d [input_file] -o [output_file]`
+The slide-transition-detector takes the input file and outputs all the slides in the `slides` directory
+`python detector.py -d [input_file]`
 
 ### Cleanup
 to clean up all the files generated from the script call

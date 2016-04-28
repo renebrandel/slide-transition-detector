@@ -62,39 +62,81 @@ class ImageWriter(object):
 
 
 class Timeline(object):
-    
-    rendered_images = []
+    """
+    The Timeline represents a logical sequence of frames, where the
+    rendering of frames from the video stream will be done through
+    lazy evaluation.
+    """
+    rendered_frames = []
     reader_head = 0
     
     def __init__(self, stream):
+        """
+        Default Constructor
+        :param stream: the video stream from OpenCV
+        """
         self.stream = stream
 
     def render_frames(self, pos):
+        """
+        This method evaluates the video stream and converts its values
+        into frames up to the specified position.
+        :param pos: the position to which the stream shall be rendered
+        (including frame at pos)
+        """
+        assert pos >= 0
         while pos >= self.reader_head:
             self.next_frame()
 
     def next_frame(self):
+        """
+        This method reads the next frame from the video stream and
+        append it to the rendered_frames list. It also increments the
+        reader_head by 1.
+        :return: Usually the recently evaluated frame.
+        If the video stream has been completely read, it will return
+        None
+        """
         ret, frame = self.stream.read()
         self.reader_head += 1
+
         if not ret:
             return None
+
+        self.rendered_frames.append(frame)
         return frame
 
     def get_frame(self, pos):
+        """
+        Returns the frame at the given position of the frame sequence
+        :param pos: the position of the frame in the sequence
+        :return: the frame at the specified position
+        """
+        assert pos >= 0
+
         if pos >= self.reader_head:
             self.render_frames(pos)
-        return self.rendered_images[pos]
+        return self.rendered_frames[pos]
 
     def get_frames(self, start, end):
+        """
+        Returns the list of frames at between the specified start and
+        end position in the frame sequence.
+        :param start: Where the frame sequence should start
+        :param end: Where the frame sequence should end
+        :return: the frame sequence from start to end
+        """
         assert end >= start
+        assert start >= 0
+
         if end >= self.reader_head:
             self.render_frames(end)
-        return self.rendered_images[start:end]
+        return self.rendered_frames[start:end]
 
 
 class SlidingWindow(object):
 
-    def __init__(self, timeline, pos=0, size=0):
+    def __init__(self, timeline, pos=0, size=2):
         self.timeline = timeline
         self.pos = pos
         self.size = size

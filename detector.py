@@ -159,7 +159,7 @@ class SlidingWindow(object):
 
     def move_right(self):
         """
-        This method makes this:
+        This method does this:
         ░|░|█|█|░|░ => ░|░|░|█|█|░
         1 2 3 4 5 6    1 2 3 4 5 6
         :return: the changed list of frame
@@ -168,7 +168,7 @@ class SlidingWindow(object):
 
     def move_left(self):
         """
-        This method makes this:
+        This method does this:
         ░|░|█|█|░|░ => ░|█|█|░|░|░
         1 2 3 4 5 6    1 2 3 4 5 6
         :return: the changed list of frame
@@ -177,7 +177,7 @@ class SlidingWindow(object):
 
     def shrink_from_left(self):
         """
-        This method makes this:
+        This method does this:
         ░|░|█|█|░|░ => ░|░|░|█|░|░
         1 2 3 4 5 6    1 2 3 4 5 6
         :return: the changed list of frame
@@ -187,7 +187,7 @@ class SlidingWindow(object):
 
     def shrink_from_right(self):
         """
-        This method makes this:
+        This method does this:
         ░|░|█|█|░|░ => ░|░|█|░|░|░
         1 2 3 4 5 6    1 2 3 4 5 6
         :return: the changed list of frame
@@ -196,7 +196,7 @@ class SlidingWindow(object):
 
     def expand_to_left(self):
         """
-        This method makes this:
+        This method does this:
         ░|░|█|█|░|░ => ░|█|█|█|░|░
         1 2 3 4 5 6    1 2 3 4 5 6
         :return: the changed list of frame
@@ -206,7 +206,7 @@ class SlidingWindow(object):
 
     def expand_to_right(self):
         """
-        This method makes this:
+        This method does$$ this:
         ░|░|█|█|░|░ => ░|░|█|█|█|░
         1 2 3 4 5 6    1 2 3 4 5 6
         :return: the changed list of frame
@@ -273,14 +273,8 @@ def are_same(fst, snd):
 
 
 def setup_dirs():
-    if not os.path.exists('img'):
-        os.makedirs('img')
-
     if not os.path.exists('slides'):
         os.makedirs('slides')
-
-    if not os.path.exists('matches'):
-        os.makedirs('matches')
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 import os
-folders = ['img', 'matches', 'slides']
+folders = ['slides']
 
 for folder in folders:
     for the_file in os.listdir(folder):

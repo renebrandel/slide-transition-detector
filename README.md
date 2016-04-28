@@ -3,7 +3,12 @@
 This Python script will analyze a video stream of a presentation and output the presentation slides.
 
 ## Requirements
-You will need to install OpenCV 3.1.0 and OpenCV Contributions 3.1.0
+You will need to install OpenCV 3.1.0, OpenCV Contributions 3.1.0, Numpy and ProgressBar library.
+### Setup
+#### OpenCV
+#### OpenCV Contributions
+#### Numpy
+#### ProgressBar
 
 ## Usage
 ### Slide Detection

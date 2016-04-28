@@ -5,6 +5,7 @@ import cv2
 import os
 import numpy as np
 import sys
+import progressbar as pb
 
 
 class InfiniteCounter(object):
@@ -229,7 +230,10 @@ class Detector(object):
 
         frame_counter = InfiniteCounter()
         total_frames = self.cap.get(cv2.CAP_PROP_FRAME_COUNT)
-        startProgress("Analyzing Frames")
+        print
+        widgets = ['Analyzing Video: ', pb.Percentage(), ' - ', pb.Bar(), ' ']
+        progress = pb.ProgressBar(widgets=widgets, maxval=total_frames).start()
+
 
         for frame_count in frame_counter.count():
             frame = timeline.next_frame()
@@ -239,9 +243,10 @@ class Detector(object):
                 slide_writer.write_image(frame)
 
             last_frame = frame
-            progress(frame_count / total_frames)
+            progress.update(frame_count)
 
-        endProgress()
+        progress.finish()
+        print
         self.cap.release()
 
 class DetectionStrategy(object):
@@ -270,22 +275,6 @@ def setup_dirs():
     if not os.path.exists('slides'):
         os.makedirs('slides')
 
-def startProgress(title):
-    global progress_x
-    sys.stdout.write(title + ": [" + "-"*40 + "]" + chr(8)*41)
-    sys.stdout.flush()
-    progress_x = 0
-
-def progress(x):
-    global progress_x
-    x = int(x * 40 // 100)
-    sys.stdout.write("#" * (x - progress_x))
-    sys.stdout.flush()
-    progress_x = x
-
-def endProgress():
-    sys.stdout.write("#" * (40 - progress_x) + "]\n")
-    sys.stdout.flush()
 
 if __name__ == "__main__":
     Parser = argparse.ArgumentParser(description="OpenCV Test")

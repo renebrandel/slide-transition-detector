@@ -3,31 +3,65 @@ import cv2
 import os
 import numpy as np
 
-class InfiniteCounter:
+
+class InfiniteCounter(object):
+    """
+    InfiniteCounter is a class that represents a counter that will
+    return the next number indefinitely. When the user calls count()
+    return the current number. Then it will increment the current
+    number by the specified steps.
+    """
 
     def __init__(self, start=0, step=1):
+        """
+        Default Constructor
+        :param start: the starting value of the counter
+        :param step: the amount that should be added at each step
+        """
         self.current = start
         self.step = step
 
     def count(self):
+        """
+        The count method yields the current number and then
+        increments the current number by the specified step in the
+        default constructor
+        :return: the successor from the previous number
+        """
         while True:
             yield self.current
             self.current += self.step
 
-class ImageWriter:
 
+class ImageWriter(object):
+    """
+    The ImageWriter will write an image to disk and auto-increments
+    the filename.
+    """
     def __init__(self, prefix='img ', file_format='.jpg', count=0):
+        """
+        Default constructor
+        :param prefix: the filename prefix a counter will be added
+        after this string and incremented after each write to disk
+        :param file_format: the file format for the images.
+        :param count: the starting number of the counter
+        """
         if not file_format.startswith('.'):
             file_format = '.' + file_format
         self.count = count
         self.name = prefix + '%d' + file_format
 
     def write_image(self, img):
+        """
+        Writes the given image to the location specified through the
+        constructor
+        :param img: the image that will be written to disk
+        """
         cv2.imwrite(self.name % self.count, img)
         self.count += 1
 
 
-class Detector:
+class Detector(object):
 
     def __init__(self, device):
         setup_dirs()
@@ -46,15 +80,15 @@ class Detector:
 
             if not ret:
                 break
-
-            if not are_same(last_frame, frame, i):
+            print i,
+            if not are_same(last_frame, frame):
                 slide_writer.write_image(frame)
             last_frame = frame
 
         self.cap.release()
 
 
-class DetectionStrategy:
+class DetectionStrategy(object):
 
     pass
 
@@ -67,11 +101,11 @@ def sanitize_device(device):
         return device
 
 
-def are_same(fst, snd, count):
+def are_same(fst, snd):
     res = cv2.subtract(snd, fst)
     hist = cv2.calcHist([res], [0], None, [256], [0, 256])
     similarity = 1 - np.sum(hist[15::]) / np.sum(hist)
-    print count, similarity
+    print similarity
     if similarity > 0.99:
         return True
     return False

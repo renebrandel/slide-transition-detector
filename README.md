@@ -1,0 +1,1 @@
+# slide-transition-detector

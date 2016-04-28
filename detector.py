@@ -61,6 +61,71 @@ class ImageWriter(object):
         self.count += 1
 
 
+class Timeline(object):
+    
+    rendered_images = []
+    reader_head = 0
+    
+    def __init__(self, stream):
+        self.stream = stream
+
+    def render_frames(self, pos):
+        while pos >= self.reader_head:
+            self.add_frame()
+
+    def add_frame(self):
+        ret, frame = self.stream.read()
+        self.reader_head += 1
+        if not ret:
+            return "END"
+        return frame
+
+    def get_frame(self, pos):
+        if pos >= self.reader_head:
+            self.render_frames(pos)
+        return self.rendered_images[pos]
+
+    def get_frames(self, start, end):
+        if end >= self.reader_head:
+            self.render_frames(end)
+        return self.rendered_images[start:end]
+
+
+class SlidingWindow(object):
+
+    def __init__(self, timeline, pos=0, size=0):
+        self.timeline = timeline
+        self.pos = pos
+        self.size = size
+
+    def move_right(self):
+        self.pos += 1
+
+    def move_left(self):
+        self.pos -= 1
+
+    def shrink_from_left(self):
+        self.pos += 1
+        self.size -= 1
+
+    def shrink_from_right(self):
+        self.size -= 1
+
+    def expand_from_left(self):
+        self.pos -= 1
+        self.size += 1
+
+    def expand_from_right(self):
+        self.size += 1
+
+    def action_on_frame(self, action):
+        for frame in self.get_frames():
+            return action(frame)
+
+    def get_frames(self):
+        return self.timeline.get_frames(self.pos, self.pos + self.size)
+
+
 class Detector(object):
 
     def __init__(self, device):

@@ -4,6 +4,7 @@ import argparse
 import cv2
 import os
 import numpy as np
+import sys
 
 
 class InfiniteCounter(object):
@@ -69,7 +70,6 @@ class Timeline(object):
     rendering of frames from the video stream will be done through
     lazy evaluation.
     """
-    rendered_frames = []
     reader_head = 0
     
     def __init__(self, stream):
@@ -78,17 +78,7 @@ class Timeline(object):
         :param stream: the video stream from OpenCV
         """
         self.stream = stream
-
-    def render_frames(self, pos):
-        """
-        This method evaluates the video stream and converts its values
-        into frames up to the specified position.
-        :param pos: the position to which the stream shall be rendered
-        (including frame at pos)
-        """
-        assert pos >= 0
-        while pos >= self.reader_head:
-            self.next_frame()
+        self.stream_len = stream.get(cv2.CAP_PROP_FRAME_COUNT)
 
     def next_frame(self):
         """
@@ -105,7 +95,6 @@ class Timeline(object):
         if not ret:
             return None
 
-        self.rendered_frames.append(frame)
         return frame
 
     def get_frame(self, pos):
@@ -115,10 +104,11 @@ class Timeline(object):
         :return: the frame at the specified position
         """
         assert pos >= 0
+        self.stream.set(cv2.CAP_PROP_POS_FRAMES, self.stream_len - 1)
+        _, frame = self.stream.read()
+        self.reader_head = pos + 1
+        return frame
 
-        if pos >= self.reader_head:
-            self.render_frames(pos)
-        return self.rendered_frames[pos]
 
     def get_frames(self, start, end):
         """
@@ -131,9 +121,10 @@ class Timeline(object):
         assert end >= start
         assert start >= 0
 
-        if end >= self.reader_head:
-            self.render_frames(end)
-        return self.rendered_frames[start:end]
+        result = []
+        for i in xrange(start, end, 1):
+            result.append(self.get_frame(i))
+        return result
 
 
 class SlidingWindow(object):
@@ -236,18 +227,22 @@ class Detector(object):
         slide_writer = ImageWriter('slides/slide ')
         slide_writer.write_image(last_frame)
 
-        while True:
-            frame = timeline.next_frame()
+        frame_counter = InfiniteCounter()
+        total_frames = self.cap.get(cv2.CAP_PROP_FRAME_COUNT)
+        startProgress("Analyzing Frames")
 
+        for frame_count in frame_counter.count():
+            frame = timeline.next_frame()
             if frame is None:
                 break
             elif not are_same(last_frame, frame):
                 slide_writer.write_image(frame)
 
             last_frame = frame
+            progress(frame_count / total_frames)
 
+        endProgress()
         self.cap.release()
-
 
 class DetectionStrategy(object):
 
@@ -266,7 +261,6 @@ def are_same(fst, snd):
     res = cv2.subtract(snd, fst)
     hist = cv2.calcHist([res], [0], None, [256], [0, 256])
     similarity = 1 - np.sum(hist[15::]) / np.sum(hist)
-    print similarity
     if similarity > 0.99:
         return True
     return False
@@ -276,6 +270,22 @@ def setup_dirs():
     if not os.path.exists('slides'):
         os.makedirs('slides')
 
+def startProgress(title):
+    global progress_x
+    sys.stdout.write(title + ": [" + "-"*40 + "]" + chr(8)*41)
+    sys.stdout.flush()
+    progress_x = 0
+
+def progress(x):
+    global progress_x
+    x = int(x * 40 // 100)
+    sys.stdout.write("#" * (x - progress_x))
+    sys.stdout.flush()
+    progress_x = x
+
+def endProgress():
+    sys.stdout.write("#" * (40 - progress_x) + "]\n")
+    sys.stdout.flush()
 
 if __name__ == "__main__":
     Parser = argparse.ArgumentParser(description="OpenCV Test")

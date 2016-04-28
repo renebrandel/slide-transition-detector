@@ -71,13 +71,13 @@ class Timeline(object):
 
     def render_frames(self, pos):
         while pos >= self.reader_head:
-            self.add_frame()
+            self.next_frame()
 
-    def add_frame(self):
+    def next_frame(self):
         ret, frame = self.stream.read()
         self.reader_head += 1
         if not ret:
-            return "END"
+            return None
         return frame
 
     def get_frame(self, pos):
@@ -86,6 +86,7 @@ class Timeline(object):
         return self.rendered_images[pos]
 
     def get_frames(self, start, end):
+        assert end >= start
         if end >= self.reader_head:
             self.render_frames(end)
         return self.rendered_images[start:end]
@@ -133,21 +134,21 @@ class Detector(object):
         self.cap = cv2.VideoCapture(sanitize_device(device))
 
     def detect_slides(self):
-        _, last_frame = self.cap.read()
+
+        timeline = Timeline(self.cap)
+        last_frame = timeline.next_frame()
 
         slide_writer = ImageWriter('slides/slide ')
         slide_writer.write_image(last_frame)
 
-        slide_counter = InfiniteCounter()
+        while True:
+            frame = timeline.next_frame()
 
-        for i in slide_counter.count():
-            ret, frame = self.cap.read()
-
-            if not ret:
+            if frame is None:
                 break
-            print i,
-            if not are_same(last_frame, frame):
+            elif not are_same(last_frame, frame):
                 slide_writer.write_image(frame)
+
             last_frame = frame
 
         self.cap.release()

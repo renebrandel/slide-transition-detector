@@ -137,8 +137,22 @@ class Timeline(object):
 
 
 class SlidingWindow(object):
-
+    """
+    This class represents an adaptive sliding window. Meaning
+    that it has a pointer to the start position of the window
+    and its size. The size of the window can be changed at any
+    time. Move operations and shrink and expand operations are
+    included.
+    """
     def __init__(self, timeline, pos=0, size=2):
+        """
+        Default constructor for the sliding window
+        :param timeline: the timeline where the sliding window
+        should be applied
+        :param pos: the position where the beginning of the
+        window points to
+        :param size: the size of the window
+        """
         self.timeline = timeline
         self.pos = pos
         self.size = size

@@ -7,6 +7,8 @@ import numpy as np
 import progressbar as pb
 import datetime
 import math
+import errno
+
 
 class InfiniteCounter(object):
     """
@@ -72,6 +74,7 @@ class ImageWriter(object):
         """
         if not file_format.startswith('.'):
             file_format = '.' + file_format
+        setup_dirs(prefix)
         self.count = count - 1
         self.name = prefix + '%d' + file_format
 
@@ -92,6 +95,7 @@ class TimestampImageWriter(ImageWriter):
     def __init__(self, max_frames, fps, prefix='img ', file_format='.jpg'):
         if not file_format.startswith('.'):
             file_format = '.' + file_format
+        setup_dirs(prefix)
         self.max_frames = max_frames
         self.fps = fps
         self.name = prefix + '%s' + file_format
@@ -261,7 +265,6 @@ class SlidingWindow(object):
 class Detector(object):
 
     def __init__(self, device):
-        setup_dirs()
         self.cap = cv2.VideoCapture(sanitize_device(device))
 
     def detect_slides(self):
@@ -310,9 +313,13 @@ def are_same(fst, snd):
     return False
 
 
-def setup_dirs():
-    if not os.path.exists('slides'):
-        os.makedirs('slides')
+def setup_dirs(filename):
+    if not os.path.exists(os.path.dirname(filename)):
+        try:
+            os.makedirs(os.path.dirname(filename))
+        except OSError as exc:  # Guard against race condition
+            if exc.errno != errno.EEXIST:
+                raise
 
 
 if __name__ == "__main__":

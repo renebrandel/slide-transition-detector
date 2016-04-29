@@ -4,7 +4,6 @@ import argparse
 import cv2
 import os
 import numpy as np
-import sys
 import progressbar as pb
 
 
@@ -35,6 +34,24 @@ class InfiniteCounter(object):
         while True:
             yield self.current
             self.current += self.step
+
+
+class ProgressController(object):
+    def __init__(self, title, total):
+        self.widgets = [title, pb.Percentage(), ' - ', pb.Bar(), ' ']
+        self.total = total
+        self.progress = None
+
+    def start(self):
+        self.progress = pb.ProgressBar(widgets=self.widgets, maxval=self.total).start()
+
+    def update(self, i):
+        assert self.progress is not None
+        self.progress.update(i)
+
+    def finish(self):
+        assert self.progress is not None
+        self.progress.finish()
 
 
 class ImageWriter(object):
@@ -228,13 +245,11 @@ class Detector(object):
         slide_writer = ImageWriter('slides/slide ')
         slide_writer.write_image(last_frame)
 
-        frame_counter = InfiniteCounter()
-        total_frames = self.cap.get(cv2.CAP_PROP_FRAME_COUNT)
         print
-        widgets = ['Analyzing Video: ', pb.Percentage(), ' - ', pb.Bar(), ' ']
-        progress = pb.ProgressBar(widgets=widgets, maxval=total_frames).start()
+        progress = ProgressController('Analyzing Video: ', self.cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        progress.start()
 
-
+        frame_counter = InfiniteCounter()
         for frame_count in frame_counter.count():
             frame = timeline.next_frame()
             if frame is None:
@@ -248,10 +263,6 @@ class Detector(object):
         progress.finish()
         print
         self.cap.release()
-
-class DetectionStrategy(object):
-
-    pass
 
 
 def sanitize_device(device):

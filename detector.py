@@ -5,7 +5,8 @@ import cv2
 import os
 import numpy as np
 import progressbar as pb
-
+import datetime
+import math
 
 class InfiniteCounter(object):
     """
@@ -43,6 +44,7 @@ class ProgressController(object):
         self.progress = None
 
     def start(self):
+        print
         self.progress = pb.ProgressBar(widgets=self.widgets, maxval=self.total).start()
 
     def update(self, i):
@@ -52,6 +54,7 @@ class ProgressController(object):
     def finish(self):
         assert self.progress is not None
         self.progress.finish()
+        print
 
 
 class ImageWriter(object):
@@ -69,17 +72,40 @@ class ImageWriter(object):
         """
         if not file_format.startswith('.'):
             file_format = '.' + file_format
-        self.count = count
+        self.count = count - 1
         self.name = prefix + '%d' + file_format
 
-    def write_image(self, img):
+    def write_image(self, img, *args):
         """
         Writes the given image to the location specified through the
         constructor
         :param img: the image that will be written to disk
         """
-        cv2.imwrite(self.name % self.count, img)
+        cv2.imwrite(self.name % self.next_name(args), img)
+
+    def next_name(self, *args):
         self.count += 1
+        return self.count
+
+
+class TimestampImageWriter(ImageWriter):
+    def __init__(self, max_frames, fps, prefix='img ', file_format='.jpg'):
+        if not file_format.startswith('.'):
+            file_format = '.' + file_format
+        self.max_frames = max_frames
+        self.fps = fps
+        self.name = prefix + '%s' + file_format
+
+    def next_name(self, args):
+        current_frame = args[0]
+        seconds = current_frame / self.fps
+        milliseconds = seconds - math.floor(seconds)
+        if milliseconds == 0:
+            milliseconds = '000'
+        else:
+            milliseconds = str(int(milliseconds * (10 ** 3)))
+        return str(datetime.timedelta(seconds=int(seconds))) + '.' + milliseconds.zfill(3)
+
 
 
 class Timeline(object):
@@ -97,6 +123,7 @@ class Timeline(object):
         """
         self.stream = stream
         self.stream_len = stream.get(cv2.CAP_PROP_FRAME_COUNT)
+        self.stream_fps = stream.get(cv2.CAP_PROP_FPS)
 
     def next_frame(self):
         """
@@ -242,26 +269,27 @@ class Detector(object):
         timeline = Timeline(self.cap)
         last_frame = timeline.next_frame()
 
-        slide_writer = ImageWriter('slides/slide ')
-        slide_writer.write_image(last_frame)
+        slide_writer = TimestampImageWriter(timeline.stream_len, timeline.stream_fps, 'slides/')
+        slide_writer.write_image(last_frame, 0)
 
-        print
-        progress = ProgressController('Analyzing Video: ', self.cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        progress = ProgressController('Analyzing Video: ', timeline.stream_len)
         progress.start()
 
         frame_counter = InfiniteCounter()
         for frame_count in frame_counter.count():
+
             frame = timeline.next_frame()
+
             if frame is None:
                 break
             elif not are_same(last_frame, frame):
-                slide_writer.write_image(frame)
+                slide_writer.write_image(frame, frame_count)
 
             last_frame = frame
             progress.update(frame_count)
 
         progress.finish()
-        print
+
         self.cap.release()
 
 

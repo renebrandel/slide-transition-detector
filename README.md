@@ -8,7 +8,9 @@ You will need to install OpenCV 3.1.0, OpenCV Contributions 3.1.0, Numpy and Pro
 #### OpenCV
 #### OpenCV Contributions
 #### Numpy
+`pip install numpy`
 #### ProgressBar
+`pip install progressbar`
 
 ## Usage
 ### Slide Detection

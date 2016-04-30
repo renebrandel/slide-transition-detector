@@ -2,14 +2,10 @@
 
 import argparse
 import cv2
-import os
 import numpy as np
 import progressbar as pb
-import datetime
-import math
-import errno
 import cleanup
-from abc import ABCMeta, abstractmethod
+import mediaoutput
 
 
 class InfiniteCounter(object):
@@ -22,7 +18,7 @@ class InfiniteCounter(object):
 
     def __init__(self, start=0, step=1):
         """
-        Default Constructor
+        Default Initializer
         :param start: the starting value of the counter
         :param step: the amount that should be added at each step
         """
@@ -33,7 +29,7 @@ class InfiniteCounter(object):
         """
         The count method yields the current number and then
         increments the current number by the specified step in the
-        default constructor
+        default initializer
         :return: the successor from the previous number
         """
         while True:
@@ -61,67 +57,6 @@ class ProgressController(object):
         print
 
 
-class ImageWriter(object):
-    """
-    The ImageWriter will write an image to disk and auto-increments
-    the filename.
-    """
-
-    __metaclass__ = ABCMeta
-
-    def __init__(self, prefix='img ', file_format='.jpg'):
-        """
-        Default constructor
-        :param prefix: the filename prefix a counter will be added
-        after this string and incremented after each write to disk
-        :param file_format: the file format for the images.
-        :param count: the starting number of the counter
-        """
-        if not file_format.startswith('.'):
-            file_format = '.' + file_format
-        setup_dirs(prefix)
-        self.name = prefix + file_format
-
-    def write_image(self, img, *args):
-        """
-        Writes the given image to the location specified through the
-        constructor
-        :param img: the image that will be written to disk
-        """
-        cv2.imwrite(self.name % self.next_name(args), img)
-
-    @abstractmethod
-    def next_name(self, *args): pass
-
-
-class IncrementalImageWriter(ImageWriter):
-    def __init__(self,prefix='img ', file_format='.jpg', start=0, step=1):
-        self.count = start - step
-        self.step = step
-        super(IncrementalImageWriter, self).__init__(prefix + '%d', file_format)
-
-    def next_name(self, *args):
-        self.count += self.step
-        return self.count
-
-
-class TimestampImageWriter(ImageWriter):
-    def __init__(self, max_frames, fps, prefix='img ', file_format='.jpg'):
-        self.max_frames = max_frames
-        self.fps = fps
-        super(TimestampImageWriter, self).__init__(prefix + '%s', file_format)
-
-    def next_name(self, args):
-        current_frame = args[0]
-        seconds = current_frame / self.fps
-        milliseconds = seconds - math.floor(seconds)
-        if milliseconds == 0:
-            milliseconds = '000'
-        else:
-            milliseconds = str(int(milliseconds * (10 ** 3)))
-        return str(datetime.timedelta(seconds=int(seconds))) + '.' + milliseconds.zfill(3)
-
-
 class Timeline(object):
     """
     The Timeline represents a logical sequence of frames, where the
@@ -132,12 +67,12 @@ class Timeline(object):
     
     def __init__(self, stream):
         """
-        Default Constructor
+        Default Initializer
         :param stream: the video stream from OpenCV
         """
         self.stream = stream
-        self.stream_len = stream.get(cv2.CAP_PROP_FRAME_COUNT)
-        self.stream_fps = stream.get(cv2.CAP_PROP_FPS)
+        self.len = stream.get(cv2.CAP_PROP_FRAME_COUNT)
+        self.fps = stream.get(cv2.CAP_PROP_FPS)
 
     def next_frame(self):
         """
@@ -163,7 +98,7 @@ class Timeline(object):
         :return: the frame at the specified position
         """
         assert pos >= 0
-        self.stream.set(cv2.CAP_PROP_POS_FRAMES, self.stream_len - 1)
+        self.stream.set(cv2.CAP_PROP_POS_FRAMES, self.len - 1)
         _, frame = self.stream.read()
         self.reader_head = pos + 1
         return frame
@@ -196,7 +131,7 @@ class SlidingWindow(object):
     """
     def __init__(self, timeline, pos=0, size=2):
         """
-        Default constructor for the sliding window
+        Default Initializer for the sliding window
         :param timeline: the timeline where the sliding window
         should be applied
         :param pos: the position where the beginning of the
@@ -282,11 +217,11 @@ class Detector(object):
         timeline = Timeline(self.cap)
         last_frame = timeline.next_frame()
 
-        slide_writer = TimestampImageWriter(timeline.stream_len, timeline.stream_fps, 'slides/')
+        slide_writer = mediaoutput.TimestampImageWriter(timeline.len, timeline.fps, 'slides/')
         # slide_writer = IncrementalImageWriter('slides/slide ')
         slide_writer.write_image(last_frame, 0)
 
-        progress = ProgressController('Analyzing Video: ', timeline.stream_len)
+        progress = ProgressController('Analyzing Video: ', timeline.len)
         progress.start()
 
         frame_counter = InfiniteCounter()
@@ -322,15 +257,6 @@ def are_same(fst, snd):
     if similarity > 0.99:
         return True
     return False
-
-
-def setup_dirs(filename):
-    if not os.path.exists(os.path.dirname(filename)):
-        try:
-            os.makedirs(os.path.dirname(filename))
-        except OSError as exc:  # Guard against race condition
-            if exc.errno != errno.EEXIST:
-                raise
 
 
 if __name__ == "__main__":

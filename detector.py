@@ -8,6 +8,8 @@ import progressbar as pb
 import datetime
 import math
 import errno
+import cleanup
+from abc import ABCMeta, abstractmethod
 
 
 class InfiniteCounter(object):
@@ -47,7 +49,7 @@ class ProgressController(object):
 
     def start(self):
         print
-        self.progress = pb.ProgressBar(widgets=self.widgets, maxval=self.total).start()
+        self.progress = pb.ProgressBar(widgets=self.widgets,maxval=self.total).start()
 
     def update(self, i):
         assert self.progress is not None
@@ -64,7 +66,10 @@ class ImageWriter(object):
     The ImageWriter will write an image to disk and auto-increments
     the filename.
     """
-    def __init__(self, prefix='img ', file_format='.jpg', count=0):
+
+    __metaclass__ = ABCMeta
+
+    def __init__(self, prefix='img ', file_format='.jpg'):
         """
         Default constructor
         :param prefix: the filename prefix a counter will be added
@@ -75,8 +80,7 @@ class ImageWriter(object):
         if not file_format.startswith('.'):
             file_format = '.' + file_format
         setup_dirs(prefix)
-        self.count = count - 1
-        self.name = prefix + '%d' + file_format
+        self.name = prefix + file_format
 
     def write_image(self, img, *args):
         """
@@ -86,19 +90,26 @@ class ImageWriter(object):
         """
         cv2.imwrite(self.name % self.next_name(args), img)
 
+    @abstractmethod
+    def next_name(self, *args): pass
+
+
+class IncrementalImageWriter(ImageWriter):
+    def __init__(self,prefix='img ', file_format='.jpg', start=0, step=1):
+        self.count = start - step
+        self.step = step
+        super(IncrementalImageWriter, self).__init__(prefix + '%d', file_format)
+
     def next_name(self, *args):
-        self.count += 1
+        self.count += self.step
         return self.count
 
 
 class TimestampImageWriter(ImageWriter):
     def __init__(self, max_frames, fps, prefix='img ', file_format='.jpg'):
-        if not file_format.startswith('.'):
-            file_format = '.' + file_format
-        setup_dirs(prefix)
         self.max_frames = max_frames
         self.fps = fps
-        self.name = prefix + '%s' + file_format
+        super(TimestampImageWriter, self).__init__(prefix + '%s', file_format)
 
     def next_name(self, args):
         current_frame = args[0]
@@ -109,7 +120,6 @@ class TimestampImageWriter(ImageWriter):
         else:
             milliseconds = str(int(milliseconds * (10 ** 3)))
         return str(datetime.timedelta(seconds=int(seconds))) + '.' + milliseconds.zfill(3)
-
 
 
 class Timeline(object):
@@ -273,6 +283,7 @@ class Detector(object):
         last_frame = timeline.next_frame()
 
         slide_writer = TimestampImageWriter(timeline.stream_len, timeline.stream_fps, 'slides/')
+        # slide_writer = IncrementalImageWriter('slides/slide ')
         slide_writer.write_image(last_frame, 0)
 
         progress = ProgressController('Analyzing Video: ', timeline.stream_len)
@@ -327,6 +338,8 @@ if __name__ == "__main__":
     Parser.add_argument("-d", "--device", help="video device number or path to video file")
     Parser.add_argument("-o", "--outfile", help="path to output video file")
     Args = Parser.parse_args()
+
+    cleanup.remove_dirs()
 
     detector = Detector(Args.device)
     detector.detect_slides()

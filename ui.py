@@ -1,3 +1,5 @@
+import progressbar as pb
+
 class ProgressController(object):
     def __init__(self, title, total):
         self.widgets = [title, pb.Percentage(), ' - ', pb.Bar(), ' ']

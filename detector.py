@@ -3,7 +3,6 @@
 import argparse
 import cv2
 import numpy as np
-import progressbar as pb
 import cleanup
 import timeline
 import mediaoutput

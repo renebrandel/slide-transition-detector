@@ -57,6 +57,7 @@ class ProgressController(object):
         self.progress.finish()
         print
 
+
 class Detector(object):
 
     def __init__(self, device):
@@ -67,7 +68,7 @@ class Detector(object):
         sequence = timeline.Timeline(self.cap)
         last_frame = sequence.next_frame()
 
-        slide_writer = mediaoutput.TimestampImageWriter(sequence.len, sequence.fps, 'slides/')
+        slide_writer = mediaoutput.TimestampImageWriter(sequence.fps, 'slides/')
         # slide_writer = IncrementalImageWriter('slides/slide ')
         slide_writer.write_image(last_frame, 0)
 

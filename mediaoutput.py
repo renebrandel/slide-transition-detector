@@ -5,11 +5,11 @@ import math
 import os
 import errno
 
+
 class ImageWriter(object):
     """
     The ImageWriter will write an image to disk.
     """
-
     __metaclass__ = ABCMeta
 
     def __init__(self, prefix='img ', file_format='.jpg'):
@@ -68,8 +68,18 @@ class IncrementalImageWriter(ImageWriter):
 
 
 class TimestampImageWriter(ImageWriter):
-    def __init__(self, max_frames, fps, prefix='img ', file_format='.jpg'):
-        self.max_frames = max_frames
+    """
+    TimestampImageWriter is a ImageWriter that adds the timestamp of when
+    the image was first shown in the original stream
+    """
+
+    def __init__(self, fps, prefix='img ', file_format='.jpg'):
+        """
+        Default initializer
+        :param fps: The number of frames per second in the original stream
+        :param prefix: the prefix of the path to the output location
+        :param file_format: the file format of the output image
+        """
         self.fps = fps
         super(TimestampImageWriter, self).__init__(prefix + '%s', file_format)
 
@@ -85,6 +95,11 @@ class TimestampImageWriter(ImageWriter):
 
 
 def setup_dirs(filename):
+    """
+    Takes a path and makes sure that directories to the path
+    gets created and is writable.
+    :param filename: the path to file
+    """
     if not os.path.exists(os.path.dirname(filename)):
         try:
             os.makedirs(os.path.dirname(filename))

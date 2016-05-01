@@ -7,6 +7,7 @@ import progressbar as pb
 import cleanup
 import timeline
 import mediaoutput
+import ui
 
 
 class InfiniteCounter(object):
@@ -38,26 +39,6 @@ class InfiniteCounter(object):
             self.current += self.step
 
 
-class ProgressController(object):
-    def __init__(self, title, total):
-        self.widgets = [title, pb.Percentage(), ' - ', pb.Bar(), ' ']
-        self.total = total
-        self.progress = None
-
-    def start(self):
-        print
-        self.progress = pb.ProgressBar(widgets=self.widgets,maxval=self.total).start()
-
-    def update(self, i):
-        assert self.progress is not None
-        self.progress.update(i)
-
-    def finish(self):
-        assert self.progress is not None
-        self.progress.finish()
-        print
-
-
 class Detector(object):
 
     def __init__(self, device):
@@ -72,7 +53,7 @@ class Detector(object):
         # slide_writer = IncrementalImageWriter('slides/slide ')
         slide_writer.write_image(last_frame, 0)
 
-        progress = ProgressController('Analyzing Video: ', sequence.len)
+        progress = ui.ProgressController('Analyzing Video: ', sequence.len)
         progress.start()
 
         frame_counter = InfiniteCounter()

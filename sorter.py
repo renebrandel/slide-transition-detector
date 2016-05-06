@@ -15,13 +15,18 @@ def sort(dir):
 
     for i in xrange(len(slides)):
         slide = slides[i]
+        if slide.marked:
+            continue
+
         for j in xrange(i, len(slides)):
             other = slides[j]
             if slide == other:
                 continue
 
             if are_same(slide.img, other.img):
-                #slides.remove(other)
+                if other.marked:
+                    slide.marked = True
+                other.marked = True
                 print slide.name, other.name
 
 
@@ -29,6 +34,7 @@ class Slide(object):
     def __init__(self, name, img):
         self.name = name
         self.img = img
+        self.marked = False
 
 
 

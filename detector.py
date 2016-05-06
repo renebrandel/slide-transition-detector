@@ -46,11 +46,11 @@ class Detector(object):
     def detect_slides(self):
 
         sequence = timeline.Timeline(self.cap)
-        last_frame = sequence.next_frame()
+        prev_frame = sequence.next_frame()
 
         slide_writer = mediaoutput.TimestampImageWriter(sequence.fps, 'slides/')
         # slide_writer = IncrementalImageWriter('slides/slide ')
-        slide_writer.write_image(last_frame, 0)
+        slide_writer.write(prev_frame, 0)
 
         progress = ui.ProgressController('Analyzing Video: ', sequence.len)
         progress.start()
@@ -62,10 +62,10 @@ class Detector(object):
 
             if frame is None:
                 break
-            elif not are_same(last_frame, frame):
-                slide_writer.write_image(frame, frame_count)
+            elif not are_same(prev_frame, frame):
+                slide_writer.write(frame, frame_count)
 
-            last_frame = frame
+            prev_frame = frame
             progress.update(frame_count)
 
         progress.finish()

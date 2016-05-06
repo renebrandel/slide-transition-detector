@@ -5,8 +5,14 @@ import math
 import os
 import errno
 
+class MediaWriter(object):
 
-class ImageWriter(object):
+    __metaclass__ = ABCMeta
+    @abstractmethod
+    def write(self, img, *args):
+        pass
+
+class ImageWriter(MediaWriter):
     """
     The ImageWriter will write an image to disk.
     """
@@ -25,7 +31,7 @@ class ImageWriter(object):
         setup_dirs(prefix)
         self.name = prefix + file_format
 
-    def write_image(self, img, *args):
+    def write(self, img, *args):
         """
         Writes the given image to the location specified through the
         initializer

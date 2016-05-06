@@ -2,7 +2,7 @@
 
 import argparse
 import cv2
-import numpy as np
+import imgcomparison
 import cleanup
 import timeline
 import mediaoutput
@@ -52,6 +52,8 @@ class Detector(object):
         # slide_writer = IncrementalImageWriter('slides/slide ')
         slide_writer.write(prev_frame, 0)
 
+        comparator = imgcomparison.AbsDiffHistComparator(0.99)
+
         progress = ui.ProgressController('Analyzing Video: ', sequence.len)
         progress.start()
 
@@ -62,7 +64,7 @@ class Detector(object):
 
             if frame is None:
                 break
-            elif not are_same(prev_frame, frame):
+            elif not comparator.are_same(prev_frame, frame):
                 slide_writer.write(frame, frame_count)
 
             prev_frame = frame
@@ -79,15 +81,6 @@ def sanitize_device(device):
         return int(device)
     except (TypeError, ValueError):
         return device
-
-
-def are_same(fst, snd):
-    res = cv2.subtract(snd, fst)
-    hist = cv2.calcHist([res], [0], None, [256], [0, 256])
-    similarity = 1 - np.sum(hist[15::]) / np.sum(hist)
-    if similarity > 0.99:
-        return True
-    return False
 
 
 if __name__ == "__main__":

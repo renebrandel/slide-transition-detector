@@ -1,6 +1,6 @@
 import cv2
 import os
-import numpy as np
+import imgcomparison
 
 
 def sort(dir):
@@ -13,6 +13,8 @@ def sort(dir):
         slide = Slide(filename, cv2.imread(file_path))
         slides.append(slide)
 
+    comparator = imgcomparison.AbsDiffHistComparator(0.99)
+
     for i in xrange(len(slides)):
         slide = slides[i]
         if slide.marked:
@@ -23,7 +25,7 @@ def sort(dir):
             if slide == other:
                 continue
 
-            if are_same(slide.img, other.img):
+            if comparator.are_same(slide.img, other.img):
                 if other.marked:
                     slide.marked = True
                 other.marked = True
@@ -35,17 +37,6 @@ class Slide(object):
         self.name = name
         self.img = img
         self.marked = False
-
-
-
-
-def are_same(fst, snd):
-    res = cv2.absdiff(fst, snd)
-    hist = cv2.calcHist([res], [0], None, [256], [0, 256])
-    similarity = 1 - np.sum(hist[15::]) / np.sum(hist)
-    if similarity > 0.995:
-        return True
-    return False
 
 
 def file_supported(ext):

@@ -3,8 +3,10 @@
 This Python script will analyze a video stream of a presentation and output the presentation slides. Furthermore, it will also use OCR to detect contents on the slide for further processing.
 This project can be roughly broken down into 3 consecutive pipeline processes. 
 
-|**Input**|Video of presentation|Slides in sequencial order|Slides in logical order w/ timestamp| 
 |**Process**|Slide Detection ->|Slide Grouping ->|Content Extraction|
+|---|---|---|---|
+|**Input**|Video of presentation|Slides in sequencial order|Slides in logical order w/ timestamp| 
+
 
 * Slide Detection (works good for simple use cases)
  * It detects the different slides consectutively and outputs each slide as its own image. One slide that is shown at two different times will generate two images.

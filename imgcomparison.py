@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 from abc import ABCMeta, abstractmethod
 import operator
+import mediaoutput
 
 
 class ImageComparator(object):
@@ -41,7 +42,14 @@ class HistComparator(ImageComparator):
         pass
 
     def are_similar(self, first, second):
-        return cv2.compareHist(cv2.calcHist(first), cv2.calcHist(second), self.get_technique())
+
+        result = 0
+        for i in xrange(3):
+            hist1 = cv2.calcHist([first], [i], None, [256], [0,256])
+            hist2 = cv2.calcHist([second], [i], None, [256], [0,256])
+            result += cv2.compareHist(hist1, hist2, self.get_technique())
+
+        return result / 3
 
 
 class CorrelationHistComparator(HistComparator):
@@ -78,4 +86,3 @@ class BhattacharyyaHistComparator(HistComparator):
 
     def get_technique(self):
         return cv2.HISTCMP_BHATTACHARYYA
-

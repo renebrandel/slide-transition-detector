@@ -18,7 +18,7 @@ class ImageWriter(MediaWriter):
     """
     __metaclass__ = ABCMeta
 
-    def __init__(self, prefix='img ', file_format='.jpg'):
+    def __init__(self, prefix, file_format):
         """
         Default initializer
         :param prefix: the filename prefix a counter will be added
@@ -56,7 +56,7 @@ class IncrementalImageWriter(ImageWriter):
     specified step size after each write.
     """
 
-    def __init__(self,prefix='img ', file_format='.jpg', start=0, step=1):
+    def __init__(self,prefix='img/', file_format='.jpg', start=0, step=1):
         """
         Default initializer
         :param prefix: the file location and file name
@@ -79,7 +79,7 @@ class TimestampImageWriter(ImageWriter):
     the image was first shown in the original stream
     """
 
-    def __init__(self, fps, prefix='img ', file_format='.jpg'):
+    def __init__(self, fps, prefix='img/', file_format='.jpg'):
         """
         Default initializer
         :param fps: The number of frames per second in the original stream

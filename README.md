@@ -42,9 +42,9 @@ It will automatically assume that the output of the previous process are in the 
 `python sorter.py`
 
 To read the `timetable.txt` you can parse the file as follows:
-First read the `timetable.txt` line by line.
-Everything until the first `:` is the name of the slide. After that you can split the string with ` ` (space) as a seperator.
-Each element from the split is the timestamp of when which slide should appear.
+1. Read the `timetable.txt` line by line.
+2. Everything until the first `:` is the name of the slide. After that you can split the rest of the string after the first colon with ` ` (space) as a seperator.
+3. Each element from the split is the timestamp of when the specific slide should appear.
 
 ### Cleanup
 To clean up all the files generated from the script call

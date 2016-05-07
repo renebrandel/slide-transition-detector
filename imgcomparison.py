@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 from abc import ABCMeta, abstractmethod
+import operator
 
 
 class ImageComparator(object):
@@ -13,8 +14,8 @@ class ImageComparator(object):
     def __init__(self, threshold):
         self.threshold = threshold
 
-    def are_same(self, first, second):
-        return self.are_similar(first, second) >= self.threshold
+    def are_same(self, first, second, op=operator.ge):
+        return op(self.are_similar(first, second), self.threshold)
 
 
 class AbsDiffHistComparator(ImageComparator):

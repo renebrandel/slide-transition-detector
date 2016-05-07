@@ -4,7 +4,7 @@ This Python script will analyze a video stream of a presentation and output the 
 This project can be roughly broken down into 3 consecutive pipeline processes. 
 
 |**Process**|Slide Detection|Slide Grouping|Content Extraction|
-|---|---|---|---|
+|---|:---:|:---:|:---:|
 |**Input**|Video of presentation|Slides in sequencial order|Slides in logical order w/ timestamp| 
 |**Output**|Slides in sequencial order|Slides in logical order w/ timestamp|Slides and their contents|
 

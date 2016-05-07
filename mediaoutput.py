@@ -9,7 +9,7 @@ class MediaWriter(object):
 
     __metaclass__ = ABCMeta
     @abstractmethod
-    def write(self, img, *args):
+    def write(self, media, *args):
         pass
 
 class ImageWriter(MediaWriter):
@@ -99,6 +99,22 @@ class TimestampImageWriter(ImageWriter):
             milliseconds = str(int(milliseconds * (10 ** 3)))
         return str(datetime.timedelta(seconds=int(seconds))) + '.' + milliseconds.zfill(3)
 
+
+class TimetableWriter(MediaWriter):
+
+    def __init__(self, file):
+        self.file = file
+        self.image_writer = IncrementalImageWriter(prefix='unique/',start=1)
+
+    def write(self, slides, *args):
+        i = 1
+        for slide in slides:
+            self.image_writer.write(slide.img)
+            appearances = slide.time
+            for com in slide.times:
+                appearances += " " + com
+            self.file.write("Slide %d: %s\n" % (i, appearances))
+            i += 1
 
 def setup_dirs(filename):
     """

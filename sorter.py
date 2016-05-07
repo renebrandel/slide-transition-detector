@@ -4,45 +4,52 @@ import mediaoutput
 import imgcomparison
 
 
-def sort(dir):
-    mediaoutput.setup_dirs('unique/')
-    slides = []
-    for filename in sorted(os.listdir(dir)):
-        file_path = os.path.join(dir, filename)
-        _, ext = os.path.splitext(file_path)
-        if not file_supported(ext):
-            continue
-        slide = Slide(filename, cv2.imread(file_path))
-        slides.append(slide)
+class SlideSorter(object):
 
-    comparator = imgcomparison.AbsDiffHistComparator(0.99)
+    def __init__(self, path, comparator):
+        self.comparator = comparator
+        self.path = path
 
-    for i in xrange(len(slides)):
-        slide = slides[i]
-        if slide.marked:
-            continue
+    def sort(self):
+        mediaoutput.setup_dirs('unique/')
 
-        for j in xrange(i, len(slides)):
-            other = slides[j]
-            if slide == other or other.marked:
+        slides = self.get_slides()
+        unique_slides = self.group_slides(slides)
+
+        timetable = open('unique/timetable.txt','w')
+        mediaoutput.TimetableWriter(timetable).write(unique_slides)
+        timetable.close()
+
+    def get_slides(self):
+        slides = []
+        for filename in sorted(os.listdir(self.path)):
+            file_path = os.path.join(self.path, filename)
+            _, ext = os.path.splitext(file_path)
+            if not file_supported(ext):
+                continue
+            slide = Slide(filename, cv2.imread(file_path))
+            slides.append(slide)
+
+        return slides
+
+    def group_slides(self, slides):
+        for i in xrange(len(slides)):
+            slide = slides[i]
+            if slide.marked:
                 continue
 
-            if comparator.are_same(slide.img, other.img):
-                slide.add_time(other.time)
-                other.marked = True
+            for j in xrange(i, len(slides)):
+                other = slides[j]
+                if slide == other or other.marked:
+                    continue
 
-    unique_slides = filter(lambda x: not x.marked, slides)
-    out = mediaoutput.IncrementalImageWriter(prefix='unique/', start=1)
-    timetable = open('unique/timetable.txt','w')
-    i = 1
-    for slide in unique_slides:
-        out.write(slide.img)
-        x = slide.time
-        for com in slide.times:
-            x += " " + com
-        timetable.write("Slide %d: %s\n" % (i, x))
-        i += 1
-    timetable.close()
+                if self.comparator.are_same(slide.img, other.img):
+                    slide.add_time(other.time)
+                    other.marked = True
+
+        unique_slides = filter(lambda x: not x.marked, slides)
+
+        return unique_slides
 
 
 class Slide(object):
@@ -61,4 +68,4 @@ def file_supported(ext):
     return ext == '.jpeg' or ext == '.png' or ext == '.jpg' or ext == '.bmp'
 
 if __name__ == '__main__':
-    sort('slides')
+    SlideSorter('slides', imgcomparison.AbsDiffHistComparator(0.99)).sort()

@@ -20,7 +20,10 @@ class Slide(object):
         self.times = []
 
 
-        
+
+
+
+
 
     def add_time(self, time):
         """

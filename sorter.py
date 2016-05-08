@@ -19,6 +19,9 @@ class Slide(object):
         self.marked = False
         self.times = []
 
+
+        
+
     def add_time(self, time):
         """
         Add an additional instance in time, when the slide

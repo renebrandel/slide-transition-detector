@@ -7,10 +7,19 @@ import errno
 
 
 class MediaWriter(object):
-
+    """
+    Abstract class for all media outputs. Forcing each inheritance
+    to have a write class.
+    """
     __metaclass__ = ABCMeta
+
     @abstractmethod
     def write(self, media, *args):
+        """
+        Write method to write media to disk
+        :param media: the media to be written
+        :param args: additional arguments that may be helpful
+        """
         pass
 
 
@@ -26,7 +35,6 @@ class ImageWriter(MediaWriter):
         :param prefix: the filename prefix a counter will be added
         after this string and incremented after each write to disk
         :param file_format: the file format for the images.
-        :param count: the starting number of the counter
         """
         if not file_format.startswith('.'):
             file_format = '.' + file_format
@@ -52,11 +60,21 @@ class ImageWriter(MediaWriter):
 
 
 class CustomImageWriter(ImageWriter):
+    """
+    Image Writer that uses a custom name. It takes it as the first
+    argument in *args in the write method.
+    """
     def __init__(self, prefix='img/', file_format='.jpg'):
+        """
+        Default initializer
+        :param prefix: the file location and file name prefix
+        :param file_format: the file format e.g. .jpg, .png
+        """
         super(CustomImageWriter, self).__init__(prefix + '%s', file_format)
 
     def next_name(self, *args):
         return args[0]
+
 
 class IncrementalImageWriter(ImageWriter):
     """
@@ -69,7 +87,7 @@ class IncrementalImageWriter(ImageWriter):
         """
         Default initializer
         :param prefix: the file location and file name
-        :param file_format: the file format e.g. .jpg, png
+        :param file_format: the file format e.g. .jpg, .png
         :param start: the starting number for the incremental count
         :param step: the step by which the count should increment
         """
@@ -110,10 +128,20 @@ class TimestampImageWriter(ImageWriter):
 
 
 class TimetableWriter(MediaWriter):
-
-    def __init__(self, file):
-        self.file = file
-        self.image_writer = IncrementalImageWriter(prefix='unique/',start=1)
+    """
+    The Timetable Writer outputs each slide iteratively using
+    the IncrementalImageWriter. Additionally it outputs a ".txt"
+    document containing the slide name and their appearances.
+    """
+    def __init__(self, output_dir, timetable_file):
+        """
+        Default initializer
+        :param output_dir: the output directory for the sorted slides
+        :param timetable_file: where the timetable file should be stored
+        """
+        self.timetable = timetable_file
+        setup_dirs(timetable_file)
+        self.image_writer = IncrementalImageWriter(prefix=output_dir,start=1)
 
     def write(self, slides, *args):
         i = 1
@@ -122,8 +150,9 @@ class TimetableWriter(MediaWriter):
             appearances = slide.time
             for com in slide.times:
                 appearances += " " + com
-            self.file.write("Slide %d: %s\n" % (i, appearances))
+            self.timetable.write("Slide %d: %s\n" % (i, appearances))
             i += 1
+
 
 def setup_dirs(filename):
     """

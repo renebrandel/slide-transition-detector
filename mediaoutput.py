@@ -5,12 +5,14 @@ import math
 import os
 import errno
 
+
 class MediaWriter(object):
 
     __metaclass__ = ABCMeta
     @abstractmethod
     def write(self, media, *args):
         pass
+
 
 class ImageWriter(MediaWriter):
     """
@@ -49,6 +51,13 @@ class ImageWriter(MediaWriter):
         """
 
 
+class CustomImageWriter(ImageWriter):
+    def __init__(self, prefix='img/', file_format='.jpg'):
+        super(CustomImageWriter, self).__init__(prefix + '%s', file_format)
+
+    def next_name(self, *args):
+        return args[0]
+
 class IncrementalImageWriter(ImageWriter):
     """
     The IncrementalImageWriter will write an image to disk and append a
@@ -56,7 +65,7 @@ class IncrementalImageWriter(ImageWriter):
     specified step size after each write.
     """
 
-    def __init__(self,prefix='img/', file_format='.jpg', start=0, step=1):
+    def __init__(self, prefix='img/', file_format='.jpg', start=0, step=1):
         """
         Default initializer
         :param prefix: the file location and file name

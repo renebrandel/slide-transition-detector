@@ -15,10 +15,13 @@ This project can be roughly broken down into 3 consecutive pipeline processes.
 * OCR (not started)
 
 ## Requirements
-You will need to install OpenCV 3.1.0, OpenCV Contributions 3.1.0, Numpy and ProgressBar library.
+You will need to install OpenCV 3.1.0, Numpy and ProgressBar library.
 ### Setup
 #### OpenCV
-#### OpenCV Contributions
+
+Since the installation process of OpenCV is different from platform to platform, I would recommend checking out the [OpenCV homepage](http://opencv.org)
+
+I personally used the method described in [this tutorial](http://embedonix.com/articles/image-processing/installing-opencv-3-1-0-on-ubuntu/) to install it on my Ubuntu system.
 #### Numpy
 `pip install numpy`
 #### ProgressBar

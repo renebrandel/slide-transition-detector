@@ -27,7 +27,7 @@ class AbsDiffHistComparator(ImageComparator):
         res = cv2.absdiff(first, second)
         hist = cv2.calcHist([res], [0], None, [256], [0, 256])
         return 1 - np.sum(hist[15::]) / np.sum(hist)
-    
+
 
 class HistComparator(ImageComparator):
 

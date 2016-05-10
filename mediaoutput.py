@@ -133,15 +133,15 @@ class TimetableWriter(MediaWriter):
     the IncrementalImageWriter. Additionally it outputs a ".txt"
     document containing the slide name and their appearances.
     """
-    def __init__(self, output_dir, timetable_file):
+    def __init__(self, output_dir, timetable_file, file_format):
         """
         Default initializer
         :param output_dir: the output directory for the sorted slides
         :param timetable_file: where the timetable file should be stored
         """
         self.timetable = timetable_file
-        setup_dirs(timetable_file)
-        self.image_writer = IncrementalImageWriter(prefix=output_dir,start=1)
+        setup_dirs(timetable_file.name)
+        self.image_writer = IncrementalImageWriter(prefix=output_dir, start=1, file_format=file_format)
 
     def write(self, slides, *args):
         i = 1

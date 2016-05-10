@@ -40,15 +40,17 @@ class InfiniteCounter(object):
 
 class Detector(object):
 
-    def __init__(self, device):
+    def __init__(self, device, outfile, fileformat):
         self.cap = cv2.VideoCapture(sanitize_device(device))
+        self.outfile = outfile
+        self.fileformat = fileformat
 
     def detect_slides(self):
 
         sequence = timeline.Timeline(self.cap)
         prev_frame = sequence.next_frame()
 
-        slide_writer = mediaoutput.TimestampImageWriter(sequence.fps, 'slides/')
+        slide_writer = mediaoutput.TimestampImageWriter(sequence.fps, self.outfile, self.fileformat)
         # slide_writer = IncrementalImageWriter('slides/slide ')
         slide_writer.write(prev_frame, 0)
 
@@ -84,14 +86,16 @@ def sanitize_device(device):
 
 
 if __name__ == "__main__":
-    Parser = argparse.ArgumentParser(description="OpenCV Test")
+    Parser = argparse.ArgumentParser(description="Slide Detector")
     Parser.add_argument("-d", "--device", help="video device number or path to video file")
-    Parser.add_argument("-o", "--outfile", help="path to output video file")
+    Parser.add_argument("-o", "--outfile", help="path to output video file", default="slides/", nargs='?')
+    Parser.add_argument("-f", "--fileformat", help="file format of the output images e.g. '.jpg'",
+                        default=".jpg", nargs='?')
     Args = Parser.parse_args()
 
     cleanup.remove_dirs()
 
-    detector = Detector(Args.device)
+    detector = Detector(Args.device, Args.outfile, Args.fileformat)
     detector.detect_slides()
 
     cv2.destroyAllWindows()

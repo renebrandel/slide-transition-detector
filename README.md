@@ -47,10 +47,17 @@ The cleanup tool will be used to remove any file from a previous session before 
 It takes the output of the slide detection process and sorts them in the order of appearence. It removes all duplicate slides and the outputs a timetable.txt where the exact timestamp of each appearance time of each slide is shown.
 
 #### Usage
-It will automatically assume that the output of the previous process are in the `slides/` folder. (Will be changed in the future) The output of this process can be found in `unique/` folder. 
+The sorter.py will take all images from `[input_dir]` and sort them and export them in `[output_dir]` with `[file_format]` along with the timetable at `[timetable_path]`.
 
-`python sorter.py`
+`python sorter.py -d [input_dir] -o [output_dir] -f [file_format] -t [timetable_loc]`
 
+#### Defaults
+* `[input_dir]`: `slides/`
+* `[output_dir]`: `unique/`
+* `[file_format]`: `.jpg`
+* `[timetable_loc]`: `[ouput_dir]/timetable.txt`
+
+### Slide Parser
 To read the `timetable.txt` you can parse the file as the following:
 
 1. Read the `timetable.txt` line by line.

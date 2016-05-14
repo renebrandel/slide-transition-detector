@@ -18,7 +18,7 @@ This project can be roughly broken down into 3 consecutive pipeline processes.
 You will need to install OpenCV 3.1.0, OpenCV 3.1.0 Contributions, NumPy and ProgressBar library.
 ### OpenCV
 
-Since the installation process of OpenCV is different from platform to platform, I would recommend checking out the [OpenCV homepage](http://opencv.org).
+Since the installation process of OpenCV is different from platform to platform, I would recommend checking out the [OpenCV homepage](http://opencv.org)
 
 It is important to note that the contributions packages are required to support different types of encoding.
 
@@ -32,12 +32,16 @@ Simply install NumPy using the following command. NumPy is required to evaluate 
 
 ## Usage
 ### Slide Detection
-#### Example
-The slide-transition-detector takes the `[input_file]` and outputs all the slides in the `slides/` directory:
+#### Usage
+The slide-transition-detector takes the `[input_file]` and outputs all the slides in the `[output_dir]` directory with the file format specified in `[file_format]`:
 
-`python detector.py -d [input_file]`
+`python detector.py -d [input_file] -o [output_dir] -f [file_format]`
 
 The cleanup tool will be used to remove any file from a previous session before the beginnig of a new slide detection session.
+
+#### Defaults
+* `[output_dir]`: `slides/`
+* `[file_format]`: `.jpg`
 
 ### Slide Sorting
 It takes the output of the slide detection process and sorts them in the order of appearence. It removes all duplicate slides and the outputs a timetable.txt where the exact timestamp of each appearance time of each slide is shown.

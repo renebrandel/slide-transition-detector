@@ -150,3 +150,16 @@ class SlidingWindow(object):
         :return: the frames in the sliding window
         """
         return self.timeline.get_frames(self.pos, self.pos + self.size)
+
+    def get_frame(self, pos):
+        return self.timeline.get_frame(self.pos)
+
+    def get_start_frame(self):
+        return self.timeline.get_frame(self.pos)
+
+
+    def get_end_frame(self):
+        return self.timeline.get_frame(self.pos + self.size - 1)
+
+    def at_end(self):
+        return self.pos + self.size == self.timeline.len

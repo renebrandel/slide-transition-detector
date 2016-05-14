@@ -26,6 +26,9 @@ class InfiniteCounter(object):
         self.current = start
         self.step = step
 
+    def increment(self):
+        self.current += self.step
+
     def count(self):
         """
         The count method yields the current number and then
@@ -66,9 +69,18 @@ class Detector(object):
             if frame is None:
                 break
             elif not comparator.are_same(prev_frame, frame):
+
+                while True:
+                    if comparator.are_same(prev_frame, frame):
+                        break
+                    prev_frame = frame
+                    frame = sequence.next_frame()
+                    frame_counter.increment()
                 slide_writer.write(frame, frame_count)
 
             prev_frame = frame
+
+
             progress.update(frame_count)
 
         progress.finish()

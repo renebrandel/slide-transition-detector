@@ -62,7 +62,13 @@ To read the `timetable.txt` you can parse the file as the following:
 
 1. Read the `timetable.txt` line by line.
 2. Everything until the first `:` is the name of the slide. After that you can split the rest of the string after the first colon with ` ` (space) as a seperator.
-3. Each element from the split is the timestamp of when the specific slide should appear.
+3. Each element from the split is the timestamp of when the specific slide should appear (string trimming required).
+
+#### Usage
+The Parser reverses the effects of the files written by the sorter into `[input_dir]` and the `[timetable_loc]`. It exports the files into `[output_dir]` with `[file_format`]
+
+`python parser.py -d [input_dir] -t [timetable_loc] -o [output_dir] -f [file_format]`
+
 
 ### Cleanup
 To clean up all the files generated from the script call

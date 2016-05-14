@@ -153,16 +153,18 @@ class TimetableWriter(MediaWriter):
             self.timetable.write("Slide %d: %s\n" % (i, appearances))
             i += 1
 
-
-def setup_dirs(filename):
+def setup_dirs(path):
     """
     Takes a path and makes sure that directories to the path
     gets created and is writable.
     :param filename: the path to file
     """
-    if not os.path.exists(os.path.dirname(filename)):
+    path = os.path.dirname(path)
+    if path == '':
+        return
+    if not os.path.exists(path):
         try:
-            os.makedirs(os.path.dirname(filename))
+            os.makedirs(path)
         except OSError as exc:  # Guard against race condition
             if exc.errno != errno.EEXIST:
                 raise

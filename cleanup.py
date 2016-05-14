@@ -2,7 +2,7 @@ import os
 
 
 def remove_dirs():
-    folders = ['slides', 'img']
+    folders = []
     for folder in folders:
         for the_file in os.listdir(folder):
             file_path = os.path.join(folder, the_file)

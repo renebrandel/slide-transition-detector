@@ -31,6 +31,7 @@ Simply install NumPy using the following command. NumPy is required to evaluate 
 `pip install progressbar`
 ### Tesseract-OCR
 `sudo apt-get install libtesseract3 tesseract-ocr tesseract-ocr-[lang]`
+
 More information can be found [here](https://github.com/tesseract-ocr/tesseract)
 
 ### PyOCR
@@ -40,7 +41,7 @@ PyOCR can be installed from [here](https://github.com/jflesch/pyocr).
 
 ## Usage
 ### Slide Detection
-#### Usage
+#### Command
 The slide-transition-detector takes the `[input_file]` and outputs all the slides in the `[output_dir]` directory with the file format specified in `[file_format]`:
 
 `python detector.py -d [input_file] -o [output_dir] -f [file_format]`
@@ -54,7 +55,7 @@ The cleanup tool will be used to remove any file from a previous session before 
 ### Slide Sorting
 It takes the output of the slide detection process and sorts them in the order of appearence. It removes all duplicate slides and the outputs a timetable.txt where the exact timestamp of each appearance time of each slide is shown.
 
-#### Usage
+#### Command
 The sorter.py will take all images from `[input_dir]` and sort them and export them in `[output_dir]` with `[file_format]` along with the timetable at `[timetable_path]`.
 
 `python sorter.py -d [input_dir] -o [output_dir] -f [file_format] -t [timetable_loc]`
@@ -72,7 +73,7 @@ To read the `timetable.txt` you can parse the file as the following:
 2. Everything until the first `:` is the name of the slide. After that you can split the rest of the string after the first colon with ` ` (space) as a seperator.
 3. Each element from the split is the timestamp of when the specific slide should appear (string trimming required).
 
-#### Usage
+#### Command
 The Parser reverses the effects of the files written by the sorter into `[input_dir]` and the `[timetable_loc]`. It exports the files into `[output_dir]` with `[file_format`]
 
 `python parser.py -d [input_dir] -t [timetable_loc] -o [output_dir] -f [file_format]`

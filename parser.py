@@ -3,7 +3,8 @@ import argparse
 import cv2
 import os
 
-from sorter import SlideDataHelper
+from slides import SlideDataHelper
+
 
 class SlideParser(object):
     """

@@ -42,7 +42,7 @@ class SlideDataHelper(object):
         if image_type == "pil":
             self.imgreader = PILReader()
         else:
-            self.imgreader = OpenCVReader
+            self.imgreader = OpenCVReader()
 
     def get_slides(self):
         """

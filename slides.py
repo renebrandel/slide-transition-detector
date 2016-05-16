@@ -1,6 +1,8 @@
 import os
 import cv2
 
+from PIL import Image
+from abc import ABCMeta, abstractmethod
 
 class Slide(object):
     """
@@ -30,12 +32,17 @@ class SlideDataHelper(object):
     """
     The helps to get slides from data.
     """
-    def __init__(self, path):
+    def __init__(self, path, image_type="opencv"):
         """
         Default initializer
         :param path: the path, where the slide is stored on disk
+        :image_type: the type representing the image. Either "opencv" or "pil" might be required for certain usage.
         """
         self.path = path
+        if image_type == "pil":
+            self.imgreader = PILReader()
+        else:
+            self.imgreader = OpenCVReader
 
     def get_slides(self):
         """
@@ -49,10 +56,28 @@ class SlideDataHelper(object):
             _, ext = os.path.splitext(file_path)
             if not is_image(ext):
                 continue
-            slide = Slide(filename, cv2.imread(file_path))
+            slide = Slide(filename, self.imgreader.get_img(file_path))
             slides.append(slide)
 
         return slides
+
+
+class ImageReader(object):
+    __metaclass__ = ABCMeta
+
+    @abstractmethod
+    def get_img(self, file_path):
+        pass
+
+
+class PILReader(ImageReader):
+    def get_img(self, file_path):
+        return Image.open(file_path)
+
+
+class OpenCVReader(ImageReader):
+    def get_img(self, file_path):
+        return cv2.imread(file_path)
 
 
 def is_image(ext):

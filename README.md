@@ -29,6 +29,14 @@ Simply install NumPy using the following command. NumPy is required to evaluate 
 `pip install numpy`
 ### ProgressBar
 `pip install progressbar`
+### Tesseract-OCR
+`sudo apt-get install libtesseract3 tesseract-ocr tesseract-ocr-[lang]`
+More information can be found [here](https://github.com/tesseract-ocr/tesseract)
+
+### PyOCR
+PyOCR is a Python Wrapper for the tesseract (Optical Character Recognition) library. This is used in third process in the pipeline.
+PyOCR can be installed from [here](https://github.com/jflesch/pyocr).
+
 
 ## Usage
 ### Slide Detection

@@ -1,8 +1,10 @@
 import os
 import cv2
+import numpy
 
 from PIL import Image
 from abc import ABCMeta, abstractmethod
+
 
 class Slide(object):
     """
@@ -78,6 +80,14 @@ class PILReader(ImageReader):
 class OpenCVReader(ImageReader):
     def get_img(self, file_path):
         return cv2.imread(file_path)
+
+
+def convertToOpenCv(img):
+    return cv2.cvtColor(numpy.array(img.convert('RGB')), cv2.COLOR_RGB2BGR)
+
+
+def convertToPIL(img):
+    return Image.fromarray(img)
 
 
 def is_image(ext):

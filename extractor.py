@@ -12,7 +12,7 @@ if __name__ == "__main__":
     for slide in slides:
         txt = recognizer.image_to_string(slide.img, lang="deu", builder=pyocr.builders.TextBuilder())
         contents.append(txt)
-    count = 0
+    count = 1
 
     path = "contents/"
     mediaoutput.setup_dirs(path)

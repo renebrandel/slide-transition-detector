@@ -10,9 +10,9 @@ This project can be roughly broken down into 3 consecutive pipeline processes.
 
 * Slide Detection (works good for simple use cases)
  * It detects the different slides consectutively and outputs each slide as its own image. One slide that is shown at two different times will generate two images.
-* Slide Sorting/Grouping (works roughly)
+* Slide Sorting/Grouping (works great)
  * It will take the output of the first process and group the same slides together and generate an additional document (timetable.txt) showing the timestamp of which slide is shown when.
-* OCR (not started)
+* OCR (minumum viable product available)
 
 ## Requirements
 You will need to install OpenCV 3.1.0, OpenCV 3.1.0 Contributions, NumPy and ProgressBar library.

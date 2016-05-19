@@ -50,5 +50,9 @@ class ContentExtractor(object):
         count += 1
 
 if __name__ == "__main__":
-    ContentExtractor("unique/", "contents/").analyze()
+    Parser = argparse.ArgumentParser(description="Slide Sorter")
+    Parser.add_argument("-d", "--inputslides", help="path of the sequentially sorted slides", default="unique/")
+    Parser.add_argument("-o", "--outpath", help="path to output the content of the slides", default="contents/", nargs='?')
+    Args = Parser.parse_args()
+    ContentExtractor(Args.inputslides, Args.outpath).analyze()
 

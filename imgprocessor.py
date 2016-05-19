@@ -1,6 +1,7 @@
 from abc import ABCMeta, abstractmethod
 import cv2
 
+
 class ImageProcessor(object):
     __metaclass__ = ABCMeta
 

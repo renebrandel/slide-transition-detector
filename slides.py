@@ -82,11 +82,11 @@ class OpenCVReader(ImageReader):
         return cv2.imread(file_path)
 
 
-def convertToOpenCv(img):
+def convert_to_opencv(img):
     return cv2.cvtColor(numpy.array(img.convert('RGB')), cv2.COLOR_RGB2BGR)
 
 
-def convertToPIL(img):
+def convert_to_PIL(img):
     return Image.fromarray(img)
 
 

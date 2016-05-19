@@ -1,16 +1,24 @@
 import pyocr
 import pyocr.builders
-from slides import SlideDataHelper
+import slides
 import mediaoutput
+import imgprocessor
 
 if __name__ == "__main__":
 
     recognizer = pyocr.get_available_tools()[0]
     contents = []
 
-    slides = SlideDataHelper("unique/", image_type="pil").get_slides()
-    for slide in slides:
-        txt = recognizer.image_to_string(slide.img, lang="deu", builder=pyocr.builders.TextBuilder())
+    slide_list = slides.SlideDataHelper("unique/").get_slides()
+
+    processors = imgprocessor.ImageProcessQueue()
+    processors.add(imgprocessor.GreyscaleProcessor())
+
+
+    for slide in slide_list:
+        processed = processors.apply(slide.img)
+        processed = slides.convertToPIL(processed)
+        txt = recognizer.image_to_string(processed, lang="deu", builder=pyocr.builders.TextBuilder())
         contents.append(txt)
     count = 1
 

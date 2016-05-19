@@ -14,7 +14,7 @@ class MediaWriter(object):
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def write(self, media, *args):
+    def write(self, content, *args):
         """
         Write method to write media to disk
         :param media: the media to be written
@@ -141,17 +141,26 @@ class TimetableWriter(MediaWriter):
         """
         self.timetable = timetable_file
         setup_dirs(timetable_file.name)
-        self.image_writer = IncrementalImageWriter(prefix=output_dir, start=1, file_format=file_format)
+        self.img_writer = IncrementalImageWriter(prefix=output_dir, start=1, file_format=file_format)
+        self.txt_writer = TextWriter(timetable_file)
 
     def write(self, slides, *args):
         i = 1
         for slide in slides:
-            self.image_writer.write(slide.img)
+            self.img_writer.write(slide.img)
             appearances = slide.time
             for com in slide.times:
                 appearances += " " + com
-            self.timetable.write("Slide %d: %s\n" % (i, appearances))
+            self.txt_writer.write("Slide %d: %s\n" % (i, appearances))
             i += 1
+
+
+class TextWriter(MediaWriter):
+    def __init__(self, output_file):
+        self.output_file = output_file
+
+    def write(self, content, *args):
+        self.output_file.write(content)
 
 def setup_dirs(path):
     """

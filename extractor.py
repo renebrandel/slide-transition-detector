@@ -1,7 +1,7 @@
 import pyocr
 import pyocr.builders
 from slides import SlideDataHelper
-
+import mediaoutput
 
 if __name__ == "__main__":
 
@@ -13,9 +13,14 @@ if __name__ == "__main__":
         txt = recognizer.image_to_string(slide.img, lang="deu", builder=pyocr.builders.TextBuilder())
         contents.append(txt)
     count = 0
+
+    path = "contents/"
+    mediaoutput.setup_dirs(path)
+
     for line in contents:
-        print "Slide %d" % count
-        print line
-        print "--------------------------------------"
-        print
+        file = open(path + "Slide %d.txt" % count, 'w')
+        writer = mediaoutput.TextWriter(file)
+        writer.write(line.encode('utf-8'))
+        file.close()
         count += 1
+

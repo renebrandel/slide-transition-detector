@@ -40,19 +40,17 @@ PyOCR can be installed from [here](https://github.com/jflesch/pyocr).
 
 
 ## Usage
-### Slide Detection
+### 1. Slide Detection
 #### Command
 The slide-transition-detector takes the `[input_file]` and outputs all the slides in the `[output_dir]` directory with the file format specified in `[file_format]`:
 
 `python detector.py -d [input_file] -o [output_dir] -f [file_format]`
 
-The cleanup tool will be used to remove any file from a previous session before the beginnig of a new slide detection session.
-
 #### Defaults
 * `[output_dir]`: `slides/`
 * `[file_format]`: `.jpg`
 
-### Slide Sorting
+### 2. Slide Sorting
 It takes the output of the slide detection process and sorts them in the order of appearence. It removes all duplicate slides and the outputs a timetable.txt where the exact timestamp of each appearance time of each slide is shown.
 
 #### Command
@@ -66,7 +64,19 @@ The sorter.py will take all images from `[input_dir]` and sort them and export t
 * `[file_format]`: `.jpg`
 * `[timetable_loc]`: `[ouput_dir]/timetable.txt`
 
-### Slide Parser
+### 3. Content Extractor
+It takes each slide and preprocesses them for better OCR, then extracts the content with OCR and exports the contents into its own file. The result of the preprocessing will not be saved to disk.
+
+#### Command
+The extractor takes the slides from `[input_dir]` and exports their contents to `[output_dir]`.
+
+`python extractor.py -d [input_dir] -o [output_dir]`
+
+#### Defaults
+* `[input_dir]`: `unique/`
+* `[output_dir]`: `contents/`
+
+### 2.5 Slide Parser
 To read the `timetable.txt` you can parse the file as the following:
 
 1. Read the `timetable.txt` line by line.
@@ -77,11 +87,3 @@ To read the `timetable.txt` you can parse the file as the following:
 The Parser reverses the effects of the files written by the sorter into `[input_dir]` and the `[timetable_loc]`. It exports the files into `[output_dir]` with `[file_format`]
 
 `python parser.py -d [input_dir] -t [timetable_loc] -o [output_dir] -f [file_format]`
-
-
-### Cleanup
-To clean up all the files generated from the script call
-
-`python cleanup.py`
-
-It will delete all the files in `img/`, `matches/` and `slides/`

@@ -104,7 +104,5 @@ if __name__ == "__main__":
                         default=".jpg", nargs='?')
     Args = Parser.parse_args()
 
-    cleanup.remove_dirs()
-
     detector = Detector(Args.device, Args.outpath, Args.fileformat)
     detector.detect_slides()

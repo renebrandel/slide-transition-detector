@@ -1,4 +1,5 @@
 from abc import ABCMeta, abstractmethod
+import cv2
 
 class ImageProcessor(object):
     __metaclass__ = ABCMeta
@@ -8,7 +9,14 @@ class ImageProcessor(object):
         pass
 
 
+class GreyscaleProcessor(ImageProcessor):
+
+    def process(self, img):
+        return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+
 class ImageProcessQueue(object):
+
     def __init__(self, processors=None):
         elem = []
         if not processors is None:
@@ -18,9 +26,7 @@ class ImageProcessQueue(object):
     def add(self, processor):
         self.queue.append(processor)
 
-    def apply(self, imgs):
-        for img in imgs:
-            for processor in self.queue:
-                img = processor.process(img)
-
-        return imgs
+    def apply(self, img):
+        for processor in self.queue:
+            img = processor.process(img)
+        return img

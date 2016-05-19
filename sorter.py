@@ -1,8 +1,9 @@
 import cv2
 import os
 import mediaoutput
-import imgcomparison
+import imgcomparison as ic
 import argparse
+import ui
 from slides import SlideDataHelper
 
 
@@ -43,7 +44,11 @@ class SlideSorter(object):
         :param slides: the list of slides possibly containing duplicates
         :return: a list of slides without duplicates
         """
+
+        progress = ui.ProgressController('Sorting Slides: ', len(slides))
+        progress.start()
         for i in xrange(len(slides)):
+            progress.update(i)
             slide = slides[i]
             if slide.marked:
                 continue
@@ -58,14 +63,14 @@ class SlideSorter(object):
                     other.marked = True
 
         unique_slides = filter(lambda x: not x.marked, slides)
-
+        progress.finish()
         return unique_slides
 
 
 if __name__ == '__main__':
 
     Parser = argparse.ArgumentParser(description="Slide Sorter")
-    Parser.add_argument("-d", "--inputslides", help="path of the sequentially sorted slides")
+    Parser.add_argument("-d", "--inputslides", help="path of the sequentially sorted slides", default="slides/")
     Parser.add_argument("-o", "--outpath", help="path to output slides", default="unique/", nargs='?')
     Parser.add_argument("-f", "--fileformat", help="file format of the output images e.g. '.jpg'",
                         default=".jpg", nargs='?')
@@ -76,5 +81,5 @@ if __name__ == '__main__':
     if Args.timetable is None:
         Args.timetable = os.path.join(Args.outpath, "timetable.txt")
 
-    SlideSorter(Args.inputslides, imgcomparison.AbsDiffHistComparator(0.99), Args.outpath, Args.timetable, Args.fileformat).sort()
-    cv2.destroyAllWindows()
+    sorter = SlideSorter(Args.inputslides, ic.AbsDiffHistComparator(0.99), Args.outpath, Args.timetable, Args.fileformat)
+    sorter.sort()

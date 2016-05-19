@@ -108,5 +108,3 @@ if __name__ == "__main__":
 
     detector = Detector(Args.device, Args.outpath, Args.fileformat)
     detector.detect_slides()
-
-    cv2.destroyAllWindows()

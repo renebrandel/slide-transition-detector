@@ -3,6 +3,7 @@ import pyocr.builders
 import slides
 import mediaoutput
 import imgprocessor
+import ui
 import argparse
 
 
@@ -19,12 +20,18 @@ class ContentExtractor(object):
 
         slide_list = slides.SlideDataHelper(self.input_dir).get_slides()
 
+        progress = ui.ProgressController('Extracting Content: ', len(slide_list))
+        progress.start()
+
         processors = imgprocessor.ImageProcessQueue()
         processors.add(imgprocessor.GreyscaleProcessor())
-        count = 1
+        count = 0
         for slide in slide_list:
-            self.extract(slide, processors, count)
+            progress.update(count)
             count += 1
+            self.extract(slide, processors, count)
+
+        progress.finish()
 
     def extract(self, slide, processors, count):
         processed = processors.apply(slide.img)

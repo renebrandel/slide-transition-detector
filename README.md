@@ -1,8 +1,8 @@
 # slide-transition-detector
-
 This Python script will analyze a video stream of a presentation and output the presentation slides. Furthermore, it will also use OCR to detect contents on the slide for further processing.
-This project can be roughly broken down into 3 consecutive pipeline processes. 
+This project can be roughly broken down into 3 consecutive pipeline processes.
 
+##Overview
 |**Process**|Slide Detection|Slide Grouping|Content Extraction|
 |---|:---:|:---:|:---:|
 |**Input**|Video of presentation|Slides in sequencial order|Slides in logical order w/ timestamp| 
@@ -76,7 +76,7 @@ The extractor takes the slides from `[input_dir]` and exports their contents to 
 * `[input_dir]`: `unique/`
 * `[output_dir]`: `contents/`
 
-### 2.5 Slide Parser
+###(4. Slide Parser)
 To read the `timetable.txt` you can parse the file as the following:
 
 1. Read the `timetable.txt` line by line.

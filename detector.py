@@ -3,7 +3,6 @@
 import argparse
 import cv2
 import imgcomparison
-import cleanup
 import timeline
 import mediaoutput
 import ui
@@ -44,27 +43,35 @@ class InfiniteCounter(object):
 class Detector(object):
 
     def __init__(self, device, outpath, fileformat):
-        self.cap = cv2.VideoCapture(sanitize_device(device))
+        cap = cv2.VideoCapture(sanitize_device(device))
+        self.sequence = timeline.Timeline(cap)
         self.outpath = outpath
         self.fileformat = fileformat
 
+
     def detect_slides(self):
-
-        sequence = timeline.Timeline(self.cap)
-        prev_frame = sequence.next_frame()
-
-        slide_writer = mediaoutput.TimestampImageWriter(sequence.fps, self.outpath, self.fileformat)
-        slide_writer.write(prev_frame, 0)
+        slide_writer = mediaoutput.TimestampImageWriter(self.sequence.fps, self.outpath, self.fileformat)
 
         comparator = imgcomparison.AbsDiffHistComparator(0.99)
 
-        progress = ui.ProgressController('Analyzing Video: ', sequence.len)
+        progress = ui.ProgressController('Analyzing Video: ', self.sequence.len)
         progress.start()
+
+        for i in self.analyze(comparator, slide_writer):
+            progress.update(i)
+
+        progress.finish()
+
+        self.sequence.release_stream()
+
+    def analyze(self, comparator, writer):
+        prev_frame = self.sequence.next_frame()
+        writer.write(prev_frame, 0)
 
         frame_counter = InfiniteCounter()
         for frame_count in frame_counter.count():
 
-            frame = sequence.next_frame()
+            frame = self.sequence.next_frame()
 
             if frame is None:
                 break
@@ -74,18 +81,13 @@ class Detector(object):
                     if comparator.are_same(prev_frame, frame):
                         break
                     prev_frame = frame
-                    frame = sequence.next_frame()
+                    frame = self.sequence.next_frame()
                     frame_counter.increment()
-                slide_writer.write(frame, frame_count)
+                writer.write(frame, frame_count)
 
             prev_frame = frame
 
-
-            progress.update(frame_count)
-
-        progress.finish()
-
-        self.cap.release()
+            yield frame_count
 
 
 def sanitize_device(device):

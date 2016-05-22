@@ -2,6 +2,7 @@
 
 import cv2
 
+
 class Timeline(object):
     """
     The Timeline represents a logical sequence of frames, where the
@@ -48,7 +49,6 @@ class Timeline(object):
         self.reader_head = pos + 1
         return frame
 
-
     def get_frames(self, start, end):
         """
         Returns the list of frames at between the specified start and
@@ -64,6 +64,9 @@ class Timeline(object):
         for i in xrange(start, end, 1):
             result.append(self.get_frame(i))
         return result
+
+    def release_stream(self):
+        self.stream.release()
 
 
 class SlidingWindow(object):
@@ -156,7 +159,6 @@ class SlidingWindow(object):
 
     def get_start_frame(self):
         return self.timeline.get_frame(self.pos)
-
 
     def get_end_frame(self):
         return self.timeline.get_frame(self.pos + self.size - 1)

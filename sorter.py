@@ -5,9 +5,10 @@ import imgcomparison as ic
 import argparse
 import ui
 from slides import SlideDataHelper
+from analyzer import Analyzer
 
 
-class SlideSorter(object):
+class SlideSorter(Analyzer):
     """
     Sorts the slides according to their timestamp.
     """
@@ -66,6 +67,8 @@ class SlideSorter(object):
         progress.finish()
         return unique_slides
 
+    def analyze(self):
+        pass
 
 if __name__ == '__main__':
 

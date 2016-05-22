@@ -6,8 +6,10 @@ import imgprocessor
 import ui
 import argparse
 
+from analyzer import Analyzer
 
-class ContentExtractor(object):
+
+class ContentExtractor(Analyzer):
 
     def __init__(self, input_dir, output_dir, lang="deu"):
         self.input_dir = input_dir

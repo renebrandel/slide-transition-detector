@@ -147,6 +147,9 @@ class TimetableWriter(MediaWriter):
     def write(self, slides, *args):
         i = 1
         for slide in slides:
+            if slide.marked:
+                self.txt_writer.write()
+                continue
             self.img_writer.write(slide.img)
             appearances = slide.time
             for com in slide.times:
@@ -161,6 +164,9 @@ class TextWriter(MediaWriter):
 
     def write(self, content, *args):
         self.output_file.write(content)
+
+    def append(self, content, line):
+        self.output_file.write()
 
 def setup_dirs(path):
     """

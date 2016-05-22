@@ -7,6 +7,8 @@ import timeline
 import mediaoutput
 import ui
 
+from slides import Slide
+
 from analyzer import Analyzer
 
 
@@ -56,14 +58,14 @@ class Detector(Analyzer):
         progress = ui.ProgressController('Analyzing Video: ', self.sequence.len)
         progress.start()
 
-        for i,_ in self.analyze():
+        for i,_ in self.check_transition():
             progress.update(i)
 
         progress.finish()
 
         self.sequence.release_stream()
 
-    def analyze(self):
+    def check_transition(self):
         prev_frame = self.sequence.next_frame()
         self.writer.write(prev_frame, 0)
 
@@ -87,6 +89,13 @@ class Detector(Analyzer):
             prev_frame = frame
 
             yield frame_count, frame
+
+
+
+    def analyze(self):
+        for i, frame in self.check_transition():
+            time = mediaoutput.TimestampImageWriter(self.sequence.fps).next_name(i)
+            yield Slide(time, frame)
 
 
 def sanitize_device(device):

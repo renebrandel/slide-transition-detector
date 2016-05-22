@@ -3,6 +3,7 @@ import os
 import mediaoutput
 import imgcomparison as ic
 import argparse
+import sources
 import ui
 from slides import SlideDataHelper
 from analyzer import Analyzer
@@ -25,50 +26,70 @@ class SlideSorter(Analyzer):
         self.outpath = outpath
         self.timetable_loc = timetable_loc
         self.file_format = file_format
+        self.source = sources.ListSource(SlideDataHelper(self.inpath).get_slides())
 
     def sort(self):
         """
         Sorting the slides and write the new slides without duplicates
         but with a timetable to disk.
         """
-        slides = SlideDataHelper(self.inpath).get_slides()
-        unique_slides = self.group_slides(slides)
+        progress = ui.ProgressController('Sorting Slides: ', len(self.source.contents()))
+        progress.start()
 
-        mediaoutput.setup_dirs(self.timetable_loc)
-        timetable = open(self.timetable_loc, 'w')
-        mediaoutput.TimetableWriter(self.outpath, timetable, self.file_format).write(unique_slides)
-        timetable.close()
+        for i,_ in self.group_slides():
+            progress.update(i)
 
-    def group_slides(self, slides):
+        progress.finish()
+
+    def group_slides(self):
         """
         Groups the slides by eliminating duplicates.
         :param slides: the list of slides possibly containing duplicates
         :return: a list of slides without duplicates
         """
+        slides = []
+        sorted = []
+        loopcounter = 0
+        pagecounter = 1
+        for slide in self.source.contents():
+            slides.append(slide)
 
-        progress = ui.ProgressController('Sorting Slides: ', len(slides))
-        progress.start()
-        for i in xrange(len(slides)):
-            progress.update(i)
-            slide = slides[i]
             if slide.marked:
                 continue
-
-            for j in xrange(i, len(slides)):
-                other = slides[j]
-                if slide == other or other.marked:
-                    continue
-
+            not_found = True
+            for other in slides[:-1]:
                 if self.comparator.are_same(slide.img, other.img):
-                    slide.add_time(other.time)
-                    other.marked = True
+                    not_found = False
+                    if other.marked:
+                        other.reference.add_time(slide.time)
+                        slide.reference = other.reference
+                        slide.marked = True
+                    else:
+                        slide.reference = other
+                        other.add_time(slide.time)
+                        slide.marked = True
+                    yield loopcounter, None
 
-        unique_slides = filter(lambda x: not x.marked, slides)
-        progress.finish()
-        return unique_slides
+            if not_found:
+                slide.page_number = pagecounter
+                yield loopcounter, slide
+                sorted.append(slide)
+                pagecounter += 1
+            loopcounter += 1
+
+        mediaoutput.setup_dirs(self.timetable_loc)
+        timetable = open(self.timetable_loc, 'w')
+        mediaoutput.TimetableWriter(self.outpath, timetable, self.file_format).write(sorted)
+        timetable.close()
 
     def analyze(self):
-        pass
+        for _,slide in self.group_slides():
+            if slide is None:
+                continue
+            yield slide.img
+
+
+
 
 if __name__ == '__main__':
 

@@ -13,13 +13,12 @@ class ListSource(Source):
         self.list = list
 
     def contents(self):
-        for i in self.list:
-            yield i
+        return self.list
 
 
 class AnalyzerSource(Source):
     def __init__(self, analyzer):
-        self.analyzer= analyzer
+        self.analyzer = analyzer
 
     def contents(self):
         for content in self.analyzer.analyze():

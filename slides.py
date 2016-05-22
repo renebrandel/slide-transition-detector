@@ -20,6 +20,8 @@ class Slide(object):
         self.img = img
         self.marked = False
         self.times = []
+        self.reference = None
+        self.page_number = 0
 
     def add_time(self, time):
         """

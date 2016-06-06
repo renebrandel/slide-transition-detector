@@ -22,7 +22,7 @@ class ContentExtractor(Analyzer):
 
     def analyze(self):
 
-        progress = ui.ProgressController('Extracting Content: ', len(self.source.contents()))
+        progress = ui.ProgressController('Extracting Content: ', len(self.source))
         progress.start()
 
         processors = imgprocessor.ImageProcessQueue()
@@ -35,7 +35,7 @@ class ContentExtractor(Analyzer):
         progress.finish()
 
     def extract(self, slide, processors, count):
-        processed = processors.apply(slide.img)
+        processed = processors.apply(slide)
         processed = convert_to_PIL(processed)
         content = self.recognizer.image_to_string(processed, lang=self.lang, builder=self.builder)
         self.export(content, count)

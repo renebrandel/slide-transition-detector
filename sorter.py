@@ -32,7 +32,7 @@ class SlideSorter(Analyzer):
         Sorting the slides and write the new slides without duplicates
         but with a timetable to disk.
         """
-        progress = ui.ProgressController('Sorting Slides: ', len(self.source.contents()))
+        progress = ui.ProgressController('Sorting Slides: ', len(self.source))
         progress.start()
 
         for i,_ in self.group_slides():
@@ -75,7 +75,6 @@ class SlideSorter(Analyzer):
                 sorted.append(slide)
                 pagecounter += 1
             loopcounter += 1
-
         mediaoutput.setup_dirs(self.timetable_loc)
         timetable = open(self.timetable_loc, 'w')
         mediaoutput.TimetableWriter(self.outpath, timetable, self.file_format).write(sorted)
@@ -86,8 +85,6 @@ class SlideSorter(Analyzer):
             if slide is None:
                 continue
             yield slide.img
-
-
 
 
 if __name__ == '__main__':

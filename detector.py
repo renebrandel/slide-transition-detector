@@ -92,7 +92,7 @@ class Detector(Analyzer):
 
     def analyze(self):
         for i, frame in self.check_transition():
-            time = mediaoutput.TimestampImageWriter(self.sequence.fps).next_name(i)
+            time = mediaoutput.TimestampImageWriter(self.sequence.fps).next_name([i])
             yield Slide(time, frame)
 
 

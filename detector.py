@@ -90,8 +90,6 @@ class Detector(Analyzer):
 
             yield frame_count, frame
 
-
-
     def analyze(self):
         for i, frame in self.check_transition():
             time = mediaoutput.TimestampImageWriter(self.sequence.fps).next_name(i)

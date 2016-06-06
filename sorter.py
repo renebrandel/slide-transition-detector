@@ -14,7 +14,7 @@ class SlideSorter(Analyzer):
     Sorts the slides according to their timestamp.
     """
 
-    def __init__(self, path, comparator, outpath, timetable_loc, file_format):
+    def __init__(self, source, comparator, outpath, timetable_loc, file_format):
         """
         Default initializer
         :param path: the path where the slides are located on disk
@@ -22,11 +22,10 @@ class SlideSorter(Analyzer):
         are duplicates.
         """
         self.comparator = comparator
-        self.inpath = path
         self.outpath = outpath
         self.timetable_loc = timetable_loc
         self.file_format = file_format
-        self.source = sources.ListSource(SlideDataHelper(self.inpath).get_slides())
+        self.source = source
 
     def sort(self):
         """
@@ -105,5 +104,5 @@ if __name__ == '__main__':
     if Args.timetable is None:
         Args.timetable = os.path.join(Args.outpath, "timetable.txt")
 
-    sorter = SlideSorter(Args.inputslides, ic.AbsDiffHistComparator(0.99), Args.outpath, Args.timetable, Args.fileformat)
+    sorter = SlideSorter(sources.ListSource(SlideDataHelper(Args.inputslides).get_slides()), ic.AbsDiffHistComparator(0.99), Args.outpath, Args.timetable, Args.fileformat)
     sorter.sort()

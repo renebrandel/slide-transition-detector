@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 from abc import ABCMeta, abstractmethod
 import operator
+import scipy.spatial.distance as dist
 
 
 class ImageComparator(object):
@@ -27,6 +28,24 @@ class AbsDiffHistComparator(ImageComparator):
         res = cv2.absdiff(first, second)
         hist = cv2.calcHist([res], [0], None, [256], [0, 256])
         return 1 - np.sum(hist[15::]) / np.sum(hist)
+
+
+class EuclideanComparator(ImageComparator):
+
+    def __init__(self, threshold):
+        super(EuclideanComparator, self).__init__(threshold)
+
+    def are_similar(self, first, second):
+        return dist.euclidean(first, second)
+
+
+class ChebysevComparator(ImageComparator):
+
+    def __init__(self, threshold):
+        super(ChebysevComparator, self).__init__(threshold)
+
+    def are_similar(self, first, second):
+        return dist.chebyshev(first, second)
 
 
 class HistComparator(ImageComparator):

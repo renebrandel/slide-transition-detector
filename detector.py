@@ -8,7 +8,6 @@ import mediaoutput
 import ui
 
 from slides import Slide
-
 from analyzer import Analyzer
 
 
@@ -49,10 +48,9 @@ class Detector(Analyzer):
     def __init__(self, device, outpath=None, fileformat=".jpg"):
         cap = cv2.VideoCapture(sanitize_device(device))
         self.sequence = timeline.Timeline(cap)
-        self.outpath = outpath
         self.writer = mediaoutput.NullWriter()
-        if not outpath is None:
-            self.writer = mediaoutput.TimestampImageWriter(self.sequence.fps, self.outpath, fileformat)
+        if outpath is not None:
+            self.writer = mediaoutput.TimestampImageWriter(self.sequence.fps, outpath, fileformat)
         self.comparator = imgcomparison.AbsDiffHistComparator(0.99)
 
     def detect_slides(self):

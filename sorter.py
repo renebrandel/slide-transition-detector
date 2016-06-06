@@ -35,7 +35,7 @@ class SlideSorter(Analyzer):
         progress = ui.ProgressController('Sorting Slides: ', len(self.source))
         progress.start()
 
-        for i,_ in self.group_slides():
+        for i, _ in self.group_slides():
             progress.update(i)
 
         progress.finish()
@@ -47,9 +47,9 @@ class SlideSorter(Analyzer):
         :return: a list of slides without duplicates
         """
         slides = []
-        sorted = []
-        loopcounter = 0
-        pagecounter = 1
+        sorted_slides = []
+        loop_counter = 0
+        page_counter = 1
         for slide in self.source.contents():
             slides.append(slide)
 
@@ -67,21 +67,21 @@ class SlideSorter(Analyzer):
                         slide.reference = other
                         other.add_time(slide.time)
                         slide.marked = True
-                    yield loopcounter, None
+                    yield loop_counter, None
 
             if not_found:
-                slide.page_number = pagecounter
-                yield loopcounter, slide
-                sorted.append(slide)
-                pagecounter += 1
-            loopcounter += 1
+                slide.page_number = page_counter
+                yield loop_counter, slide
+                sorted_slides.append(slide)
+                page_counter += 1
+            loop_counter += 1
         mediaoutput.setup_dirs(self.timetable_loc)
         timetable = open(self.timetable_loc, 'w')
-        mediaoutput.TimetableWriter(self.outpath, timetable, self.file_format).write(sorted)
+        mediaoutput.TimetableWriter(self.outpath, timetable, self.file_format).write(sorted_slides)
         timetable.close()
 
     def analyze(self):
-        for _,slide in self.group_slides():
+        for _, slide in self.group_slides():
             if slide is None:
                 continue
             yield slide.img
@@ -101,5 +101,6 @@ if __name__ == '__main__':
     if Args.timetable is None:
         Args.timetable = os.path.join(Args.outpath, "timetable.txt")
 
-    sorter = SlideSorter(sources.ListSource(SlideDataHelper(Args.inputslides).get_slides()), ic.AbsDiffHistComparator(0.99), Args.outpath, Args.timetable, Args.fileformat)
+    sorter = SlideSorter(sources.ListSource(SlideDataHelper(Args.inputslides).get_slides()),
+                         ic.AbsDiffHistComparator(0.99), Args.outpath, Args.timetable, Args.fileformat)
     sorter.sort()

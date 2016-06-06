@@ -23,6 +23,11 @@ class MediaWriter(object):
         pass
 
 
+class NullWriter(MediaWriter):
+    def write(self, content, *args):
+        pass
+
+
 class ImageWriter(MediaWriter):
     """
     The ImageWriter will write an image to disk.

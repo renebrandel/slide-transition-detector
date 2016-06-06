@@ -46,12 +46,13 @@ class InfiniteCounter(object):
 
 class Detector(Analyzer):
 
-    def __init__(self, device, outpath, fileformat):
+    def __init__(self, device, outpath=None, fileformat=".jpg"):
         cap = cv2.VideoCapture(sanitize_device(device))
         self.sequence = timeline.Timeline(cap)
         self.outpath = outpath
-        self.fileformat = fileformat
-        self.writer = mediaoutput.TimestampImageWriter(self.sequence.fps, self.outpath, self.fileformat)
+        self.writer = mediaoutput.NullWriter()
+        if not outpath is None:
+            self.writer = mediaoutput.TimestampImageWriter(self.sequence.fps, self.outpath, fileformat)
         self.comparator = imgcomparison.AbsDiffHistComparator(0.99)
 
     def detect_slides(self):

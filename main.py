@@ -18,7 +18,7 @@ if __name__ == "__main__":
                         nargs='?', default=None)
     Args = Parser.parse_args()
 
-    detector = Detector(Args.device, Args.outpath, Args.fileformat)
-    sorter = SlideSorter(AnalyzerSource(detector), ic.AbsDiffHistComparator(0.99), "unique/", "unique/timetable.txt", Args.fileformat)
+    detector = Detector(Args.device)
+    sorter = SlideSorter(AnalyzerSource(detector))
     extractor = ContentExtractor(AnalyzerSource(sorter), "contents/")
     extractor.analyze()

@@ -21,12 +21,11 @@ class ContentExtractor(Analyzer):
         self.lang = lang
 
     def analyze(self):
-
         progress = ui.ProgressController('Extracting Content: ', len(self.source))
         progress.start()
 
         processors = imgprocessor.ImageProcessQueue()
-        processors.add(imgprocessor.GreyscaleProcessor())
+        processors.add(imgprocessor.GrayscaleProcessor())
         count = 0
         for slide in self.source.contents():
             progress.update(count)

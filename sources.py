@@ -1,4 +1,5 @@
 from abc import ABCMeta, abstractmethod
+import sys
 
 
 class Source(object):
@@ -29,4 +30,4 @@ class AnalyzerSource(Source):
             yield content
 
     def __len__(self):
-        return 10000000000000000
+        return sys.maxint

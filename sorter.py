@@ -14,7 +14,7 @@ class SlideSorter(Analyzer):
     Sorts the slides according to their timestamp.
     """
 
-    def __init__(self, source, comparator, outpath, timetable_loc, file_format):
+    def __init__(self, source, outpath=None, timetable_loc=None, file_format=".jpg", comparator=ic.AbsDiffHistComparator(0.99)):
         """
         Default initializer
         :param path: the path where the slides are located on disk
@@ -22,8 +22,9 @@ class SlideSorter(Analyzer):
         are duplicates.
         """
         self.comparator = comparator
-        self.outpath = outpath
-        self.timetable_loc = timetable_loc
+        self.writer = mediaoutput.NullWriter()
+        if outpath is not None and timetable_loc is not None:
+            self.writer = mediaoutput.TimetableWriter(outpath, timetable_loc, self.file_format)
         self.file_format = file_format
         self.source = source
 
@@ -75,10 +76,7 @@ class SlideSorter(Analyzer):
                 sorted_slides.append(slide)
                 page_counter += 1
             loop_counter += 1
-        mediaoutput.setup_dirs(self.timetable_loc)
-        timetable = open(self.timetable_loc, 'w')
-        mediaoutput.TimetableWriter(self.outpath, timetable, self.file_format).write(sorted_slides)
-        timetable.close()
+            self.writer.write(sorted_slides)
 
     def analyze(self):
         for _, slide in self.group_slides():
@@ -101,6 +99,5 @@ if __name__ == '__main__':
     if Args.timetable is None:
         Args.timetable = os.path.join(Args.outpath, "timetable.txt")
 
-    sorter = SlideSorter(sources.ListSource(SlideDataHelper(Args.inputslides).get_slides()),
-                         ic.AbsDiffHistComparator(0.99), Args.outpath, Args.timetable, Args.fileformat)
+    sorter = SlideSorter(sources.ListSource(SlideDataHelper(Args.inputslides).get_slides()), Args.outpath, Args.timetable, Args.fileformat)
     sorter.sort()

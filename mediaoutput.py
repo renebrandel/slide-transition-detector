@@ -43,8 +43,9 @@ class ImageWriter(MediaWriter):
         """
         if not file_format.startswith('.'):
             file_format = '.' + file_format
-        setup_dirs(prefix)
-        self.name = prefix + file_format
+        if prefix is not None:
+            setup_dirs(prefix)
+            self.name = prefix + file_format
 
     def write(self, img, *args):
         """
@@ -69,7 +70,7 @@ class CustomImageWriter(ImageWriter):
     Image Writer that uses a custom name. It takes it as the first
     argument in *args in the write method.
     """
-    def __init__(self, prefix='img/', file_format='.jpg'):
+    def __init__(self, prefix=None, file_format='.jpg'):
         """
         Default initializer
         :param prefix: the file location and file name prefix
@@ -88,7 +89,7 @@ class IncrementalImageWriter(ImageWriter):
     specified step size after each write.
     """
 
-    def __init__(self, prefix='img/', file_format='.jpg', start=0, step=1):
+    def __init__(self, prefix=None, file_format='.jpg', start=0, step=1):
         """
         Default initializer
         :param prefix: the file location and file name
@@ -98,7 +99,9 @@ class IncrementalImageWriter(ImageWriter):
         """
         self.count = start - step
         self.step = step
-        super(IncrementalImageWriter, self).__init__(prefix + '%d', file_format)
+        if prefix is not None:
+            prefix += '%d'
+        super(IncrementalImageWriter, self).__init__(prefix, file_format)
 
     def next_name(self, *args):
         self.count += self.step
@@ -111,7 +114,7 @@ class TimestampImageWriter(ImageWriter):
     the image was first shown in the original stream
     """
 
-    def __init__(self, fps, prefix='img/', file_format='.jpg'):
+    def __init__(self, fps, prefix=None, file_format='.jpg'):
         """
         Default initializer
         :param fps: The number of frames per second in the original stream
@@ -119,7 +122,10 @@ class TimestampImageWriter(ImageWriter):
         :param file_format: the file format of the output image
         """
         self.fps = fps
-        super(TimestampImageWriter, self).__init__(prefix + '%s', file_format)
+
+        if prefix is not None:
+            prefix += '%d'
+        super(TimestampImageWriter, self).__init__(prefix, file_format)
 
     def next_name(self, args):
         current_frame = args[0]
@@ -138,16 +144,16 @@ class TimetableWriter(MediaWriter):
     the IncrementalImageWriter. Additionally it outputs a ".txt"
     document containing the slide name and their appearances.
     """
-    def __init__(self, output_dir, timetable_file, file_format):
+    def __init__(self, output_dir, timetable_loc, file_format):
         """
         Default initializer
         :param output_dir: the output directory for the sorted slides
         :param timetable_file: where the timetable file should be stored
         """
-        self.timetable = timetable_file
-        setup_dirs(timetable_file.name)
+        setup_dirs(timetable_loc)
+        self.timetable = open(timetable_loc, 'w')
         self.img_writer = IncrementalImageWriter(prefix=output_dir, start=1, file_format=file_format)
-        self.txt_writer = TextWriter(timetable_file)
+        self.txt_writer = TextWriter(timetable_loc)
 
     def write(self, slides, *args):
         i = 1
@@ -161,6 +167,8 @@ class TimetableWriter(MediaWriter):
                 appearances += " " + com
             self.txt_writer.write("Slide %d: %s\n" % (i, appearances))
             i += 1
+
+        self.timetable.close()
 
 
 class TextWriter(MediaWriter):

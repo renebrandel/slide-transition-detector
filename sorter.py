@@ -35,11 +35,14 @@ class SlideSorter(Analyzer):
         """
         progress = ui.ProgressController('Sorting Slides: ', len(self.source))
         progress.start()
-
-        for i, _ in self.group_slides():
+        slides = []
+        for i, slide in self.group_slides():
             progress.update(i)
+            if slide is not None:
+                slides.append(slide.img)
 
         progress.finish()
+        return slides
 
     def group_slides(self):
         """

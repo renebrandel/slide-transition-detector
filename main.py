@@ -1,7 +1,7 @@
 import argparse
 import imgcomparison as ic
 
-from sources import AnalyzerSource
+import sources
 from detector import Detector
 from sorter import SlideSorter
 from extractor import ContentExtractor
@@ -18,7 +18,7 @@ if __name__ == "__main__":
                         nargs='?', default=None)
     Args = Parser.parse_args()
 
-    detector = Detector(Args.device)
-    sorter = SlideSorter(AnalyzerSource(detector))
-    extractor = ContentExtractor(AnalyzerSource(sorter), "contents/")
+    detector = sources.ListSource(Detector(Args.device).detect_slides())
+    sorter = sources.ListSource(SlideSorter(detector).sort())
+    extractor = ContentExtractor(sorter, "contents/")
     extractor.analyze()

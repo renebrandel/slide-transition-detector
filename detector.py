@@ -56,13 +56,17 @@ class Detector(Analyzer):
     def detect_slides(self):
         progress = ui.ProgressController('Analyzing Video: ', self.sequence.len)
         progress.start()
-
-        for i,_ in self.check_transition():
+        frames = []
+        name_getter = mediaoutput.TimestampImageWriter(self.sequence.fps)
+        for i, frame in self.check_transition():
             progress.update(i)
+            if frame is not None:
+                frames.append(Slide(name_getter.next_name([i]), frame))
 
         progress.finish()
 
         self.sequence.release_stream()
+        return frames
 
     def check_transition(self):
         prev_frame = self.sequence.next_frame()
@@ -84,10 +88,11 @@ class Detector(Analyzer):
                     frame = self.sequence.next_frame()
                     frame_counter.increment()
                 self.writer.write(frame, frame_count)
+                yield frame_count, frame
 
             prev_frame = frame
 
-            yield frame_count, frame
+            yield frame_count, None
 
     def analyze(self):
         for i, frame in self.check_transition():

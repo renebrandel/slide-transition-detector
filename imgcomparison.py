@@ -48,12 +48,12 @@ class ChebysevComparator(ImageComparator):
         return dist.chebyshev(first, second)
 
 
-class HistComparator(ImageComparator):
+class OpenCVComparator(ImageComparator):
 
     __metaclass__ = ABCMeta
 
     def __init__(self, threshold):
-        super(HistComparator, self).__init__(threshold)
+        super(OpenCVComparator, self).__init__(threshold)
 
     @abstractmethod
     def get_technique(self):
@@ -70,37 +70,37 @@ class HistComparator(ImageComparator):
         return result / 3
 
 
-class CorrelationHistComparator(HistComparator):
+class CorrelationOpenCVComparator(OpenCVComparator):
 
     def __init__(self, threshold):
-        super(CorrelationHistComparator, self).__init__(threshold)
+        super(CorrelationOpenCVComparator, self).__init__(threshold)
 
     def get_technique(self):
         return cv2.HISTCMP_CORREL
 
 
-class ChiHistComparator(HistComparator):
+class ChiOpenCVComparator(OpenCVComparator):
 
     def __init__(self, threshold):
-        super(ChiHistComparator, self).__init__(threshold)
+        super(ChiOpenCVComparator, self).__init__(threshold)
 
     def get_technique(self):
         return cv2.HISTCMP_CHISQR
 
 
-class IntersectionHistComparator(HistComparator):
+class IntersectionOpenCVComparator(OpenCVComparator):
 
     def __init__(self, threshold):
-        super(IntersectionHistComparator, self).__init__(threshold)
+        super(IntersectionOpenCVComparator, self).__init__(threshold)
 
     def get_technique(self):
         return cv2.HISTCMP_INTERSECT
 
 
-class BhattacharyyaHistComparator(HistComparator):
+class BhattacharyyaOpenCVComparator(OpenCVComparator):
 
     def __init__(self, threshold):
-        super(BhattacharyyaHistComparator, self).__init__(threshold)
+        super(BhattacharyyaOpenCVComparator, self).__init__(threshold)
 
     def get_technique(self):
         return cv2.HISTCMP_BHATTACHARYYA

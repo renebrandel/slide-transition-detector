@@ -124,7 +124,7 @@ class TimestampImageWriter(ImageWriter):
         self.fps = fps
 
         if prefix is not None:
-            prefix += '%d'
+            prefix += '%s'
         super(TimestampImageWriter, self).__init__(prefix, file_format)
 
     def next_name(self, args):

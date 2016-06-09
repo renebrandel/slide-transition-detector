@@ -19,8 +19,7 @@ def batchExecute(inputfiles, extractor_out="contents/", detector_out="detected_s
         extractor = p.join(extractor_out, name) + p.sep
         sorter = p.join(sorter_out, name) + p.sep
         detector = p.join(detector_out, name) + p.sep
-        print "Analyzing " + name
-        print
+        print "Analyzing " + name + ":"
         execute(file, extractor, detector, sorter)
         print
 

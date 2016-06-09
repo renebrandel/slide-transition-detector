@@ -22,7 +22,6 @@ class ProgressController(object):
         the rest of the output.
         Then prints the progress bar UI.
         """
-        print
         self.progress = pb.ProgressBar(widgets=self.widgets,maxval=self.total).start()
 
     def update(self, i):
@@ -40,4 +39,3 @@ class ProgressController(object):
         """
         assert self.progress is not None
         self.progress.finish()
-        print

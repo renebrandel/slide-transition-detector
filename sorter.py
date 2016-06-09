@@ -23,7 +23,9 @@ class SlideSorter(Analyzer):
         """
         self.comparator = comparator
         self.writer = mediaoutput.NullWriter()
-        if outpath is not None and timetable_loc is not None:
+        if outpath is not None:
+            if timetable_loc is None:
+                timetable_loc = os.path.join(outpath, 'timetable.txt')
             self.writer = mediaoutput.TimetableWriter(outpath, timetable_loc, self.file_format)
         self.file_format = file_format
         self.source = source

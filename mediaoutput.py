@@ -153,7 +153,7 @@ class TimetableWriter(MediaWriter):
         setup_dirs(timetable_loc)
         self.timetable = open(timetable_loc, 'w')
         self.img_writer = IncrementalImageWriter(prefix=output_dir, start=1, file_format=file_format)
-        self.txt_writer = TextWriter(timetable_loc)
+        self.txt_writer = TextWriter(self.timetable)
 
     def write(self, slides, *args):
         i = 1

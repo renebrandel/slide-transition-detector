@@ -81,7 +81,8 @@ class SlideSorter(Analyzer):
                 sorted_slides.append(slide)
                 page_counter += 1
             loop_counter += 1
-            self.writer.write(sorted_slides)
+        self.writer.write(sorted_slides)
+        self.writer.close()
 
     def analyze(self):
         for _, slide in self.group_slides():

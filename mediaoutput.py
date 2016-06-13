@@ -159,7 +159,6 @@ class TimetableWriter(MediaWriter):
         i = 1
         for slide in slides:
             if slide.marked:
-                self.txt_writer.write()
                 continue
             self.img_writer.write(slide.img)
             appearances = slide.time
@@ -168,6 +167,8 @@ class TimetableWriter(MediaWriter):
             self.txt_writer.write("Slide %d: %s\n" % (i, appearances))
             i += 1
 
+
+    def close(self):
         self.timetable.close()
 
 

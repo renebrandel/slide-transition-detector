@@ -58,7 +58,6 @@ class SlideSorter(Analyzer):
         page_counter = 1
         for slide in self.source.contents():
             slides.append(slide)
-
             if slide.marked:
                 continue
             not_found = True

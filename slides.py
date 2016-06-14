@@ -16,7 +16,7 @@ class Slide(object):
         :param time: the time when the slide appears
         :param img: the image representing the slide
         """
-        self.time, _ = os.path.splitext(time)
+        self.time = time
         self.img = img
         self.marked = False
         self.times = []
@@ -60,7 +60,8 @@ class SlideDataHelper(object):
             _, ext = os.path.splitext(file_path)
             if not is_image(ext):
                 continue
-            slide = Slide(filename, self.imgreader.get_img(file_path))
+            time, _ = os.path.splitext(filename)
+            slide = Slide(time, self.imgreader.get_img(file_path))
             slides.append(slide)
 
         return slides

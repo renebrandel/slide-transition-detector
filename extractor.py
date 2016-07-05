@@ -34,7 +34,7 @@ class ContentExtractor(Analyzer):
         progress.finish()
 
     def extract(self, slide, processors, count):
-        processed = processors.apply(slide)
+        processed = processors.apply(slide.img)
         processed = convert_to_PIL(processed)
         content = self.recognizer.image_to_string(processed, lang=self.lang, builder=self.builder)
         self.export(content, count)

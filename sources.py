@@ -9,6 +9,8 @@ class Source(object):
     def contents(self):
         pass
 
+    def __len__(self):
+        return sys.maxint
 
 class ListSource(Source):
     def __init__(self, list):
@@ -28,6 +30,3 @@ class AnalyzerSource(Source):
     def contents(self):
         for content in self.analyzer.analyze():
             yield content
-
-    def __len__(self):
-        return sys.maxint

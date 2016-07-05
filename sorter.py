@@ -41,7 +41,7 @@ class SlideSorter(Analyzer):
         for i, slide in self.group_slides():
             progress.update(i)
             if slide is not None:
-                slides.append(slide.img)
+                slides.append(slide)
 
         progress.finish()
         return slides
@@ -87,7 +87,7 @@ class SlideSorter(Analyzer):
         for _, slide in self.group_slides():
             if slide is None:
                 continue
-            yield slide.img
+            yield slide
 
 
 if __name__ == '__main__':

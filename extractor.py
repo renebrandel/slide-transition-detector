@@ -19,6 +19,7 @@ class ContentExtractor(Analyzer):
         self.recognizer = pyocr.get_available_tools()[0]
         self.builder = pyocr.builders.TextBuilder()
         self.lang = lang
+        mediaoutput.setup_dirs(self.output_dir)
 
     def analyze(self):
         progress = ui.ProgressController('Extracting Content: ', len(self.source))
@@ -41,12 +42,10 @@ class ContentExtractor(Analyzer):
         return content, slide
 
     def export(self, content, count):
-        mediaoutput.setup_dirs(self.output_dir)
         file = open(self.output_dir + "Slide %d.txt" % count, 'w')
         writer = mediaoutput.TextWriter(file)
         writer.write(content.encode('utf-8'))
         file.close()
-        count += 1
 
 if __name__ == "__main__":
     Parser = argparse.ArgumentParser(description="Slide Sorter")

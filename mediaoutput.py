@@ -158,6 +158,7 @@ class TimetableWriter(MediaWriter):
     def write(self, slides, *args):
         i = 1
         for slide in slides:
+            print slide.time
             if slide.marked:
                 continue
             self.img_writer.write(slide.img)

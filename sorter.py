@@ -60,10 +60,10 @@ class SlideSorter(Analyzer):
             slides.append(slide)
             if slide.marked:
                 continue
-            not_found = True
+            found = False
             for other in slides[:-1]:
                 if self.comparator.are_same(slide.img, other.img):
-                    not_found = False
+                    found = True
                     if other.marked:
                         other.reference.add_time(slide.time)
                         slide.reference = other.reference
@@ -74,7 +74,7 @@ class SlideSorter(Analyzer):
                         slide.marked = True
                     yield loop_counter, None
 
-            if not_found:
+            if not found:
                 slide.page_number = page_counter
                 yield loop_counter, slide
                 sorted_slides.append(slide)

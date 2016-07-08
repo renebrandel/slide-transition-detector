@@ -28,7 +28,7 @@ TMP=/tmp/$$/
 mkdir $TMP
 
 TMPCOUNTER=/tmp/$$.tmp
-echo -1 > $TMPCOUNTER
+echo 0 > $TMPCOUNTER
 
 
 while [ true ]; do
@@ -37,8 +37,8 @@ while [ true ]; do
     if [ ! -f $PREFIX$COUNTER$FILETYPE ]; then
         break
     fi
-    RANDOM=$(shuf -i 1-40 -n 1)
-    ffmpeg -loop 1 -f image2 -vframes 100 -i $PREFIX$COUNTER$FILETYPE -vcodec libx264 -t 3 $TMP$COUNTER.mp4
+    RAND=$(shuf -i 1-40 -n 1)
+    ffmpeg -loop 1 -f image2 -vframes 100 -i $PREFIX$COUNTER$FILETYPE -vcodec libx264 -t $RAND $TMP$COUNTER.mp4
     echo $COUNTER > $TMPCOUNTER
 done
 LENGTH=$(($(cat $TMPCOUNTER)))

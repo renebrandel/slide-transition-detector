@@ -43,9 +43,8 @@ while [ true ]; do
 done
 LENGTH=$(($(cat $TMPCOUNTER)))
 VIDEOS=""
-for i in $(seq 0 $LENGTH);
+for i in $(seq 1 $LENGTH);
 do
-    echo $i
     VIDEOS="$VIDEOS $TMP$i.mp4 "
 done    
 echo $VIDEOS

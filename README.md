@@ -31,7 +31,15 @@ Simply install NumPy using the following command. NumPy is required to evaluate 
 `pip install progressbar`
 ### Tesseract-OCR
 `sudo apt-get install libtesseract3 tesseract-ocr tesseract-ocr-[lang]`
-
+### ImageMagick
+`sudo apt-get install imagemagick`
+### FFmpeg
+For Ubuntu 14.04
+`sudo apt-get install libav-tools`
+Other versions of Ubuntu
+`sudo apt-get install ffmpeg`
+### MEncoder
+`sudo apt-get install mencoder`
 More information can be found [here](https://github.com/tesseract-ocr/tesseract)
 
 ### PyOCR

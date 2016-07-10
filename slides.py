@@ -64,7 +64,6 @@ class SlideDataHelper(object):
         """
         slides = []
         for filename in sorted(os.listdir(self.path), key=self.numericalSort):
-            print(filename)
             file_path = os.path.join(self.path, filename)
             _, ext = os.path.splitext(file_path)
             if not is_image(ext):

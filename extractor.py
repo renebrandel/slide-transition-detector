@@ -13,7 +13,7 @@ from analyzer import Analyzer
 
 class ContentExtractor(Analyzer):
 
-    def __init__(self, source, output_dir, lang="deu"):
+    def __init__(self, source, output_dir, lang="eng"):
         self.source = source
         self.output_dir = output_dir
         self.recognizer = pyocr.get_available_tools()[0]
@@ -50,6 +50,7 @@ if __name__ == "__main__":
     Parser = argparse.ArgumentParser(description="Slide Sorter")
     Parser.add_argument("-d", "--inputslides", help="path of the sequentially sorted slides", default="unique/")
     Parser.add_argument("-o", "--outpath", help="path to output the content of the slides", default="contents/", nargs='?')
+    Parser.add_argument("-l", "--lang", help="language to be analyzed", default="eng", nargs='?')
     Args = Parser.parse_args()
-    ContentExtractor(sources.ListSource(SlideDataHelper(Args.inputslides).get_slides()), Args.outpath).analyze()
+    ContentExtractor(sources.ListSource(SlideDataHelper(Args.inputslides).get_slides()), Args.outpath, lang=Args.lang).analyze()
 

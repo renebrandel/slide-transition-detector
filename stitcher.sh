@@ -16,6 +16,10 @@ do
             OUTPUT="$2"
             shift
             ;;
+        -i|--index)
+            INDEX="$2"
+            shift
+            ;;
         *)
         ;;
     esac
@@ -28,7 +32,7 @@ TMP=/tmp/$$/
 mkdir $TMP
 
 TMPCOUNTER=/tmp/$$.tmp
-echo 0 > $TMPCOUNTER
+echo $INDEX > $TMPCOUNTER
 
 
 while [ true ]; do

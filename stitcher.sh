@@ -42,10 +42,11 @@ while [ true ]; do
     echo $COUNTER > $TMPCOUNTER
 done
 LENGTH=$(($(cat $TMPCOUNTER)))
+VIDEO_LOC=videos/loc.txt
 VIDEOS=""
 for i in $(seq 1 $LENGTH);
 do
-    VIDEOS="$VIDEOS $TMP$i.mp4 "
+    VIDEOS="$VIDEOS$TMP$i.mp4 "
 done    
 echo $VIDEOS
 

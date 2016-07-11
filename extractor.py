@@ -1,15 +1,22 @@
 import pyocr
 import pyocr.builders
+import subprocess
 import mediaoutput
 import imgprocessor
 import ui
 import argparse
 import sources
+import codecs
+import tempfile
+import os
 
 from slides import SlideDataHelper
 from slides import convert_to_PIL
 from analyzer import Analyzer
 
+def temp_file(suffix):
+    ''' Returns a temporary file '''
+    return tempfile.NamedTemporaryFile(prefix='tess_', suffix=suffix)
 
 class ContentExtractor(Analyzer):
 
@@ -36,15 +43,11 @@ class ContentExtractor(Analyzer):
     def extract(self, slide, processors, count):
         processed = processors.apply(slide.img)
         processed = convert_to_PIL(processed)
-        content = self.recognizer.image_to_string(processed, lang=self.lang, builder=pyocr.builders.TextBuilder())
-        self.export(content, count)
-        return content, slide
-
-    def export(self, content, count):
-        file = open(self.output_dir + "Slide %d.txt" % count, 'w')
-        writer = mediaoutput.TextWriter(file)
-        writer.write(content.encode('utf-8'))
-        file.close()
+        image = temp_file('.bmp')
+        processed.save(image)
+        subprocess.call(['tesseract', '-l', self.lang, image.name, os.path.join(self.output_dir, '%d' % count), 'hocr'])
+        subprocess.call(['tesseract', '-l', self.lang, image.name, os.path.join(self.output_dir, '%d' % count)])
+        return slide
 
 if __name__ == "__main__":
     Parser = argparse.ArgumentParser(description="Slide Sorter")

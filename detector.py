@@ -71,6 +71,7 @@ class Detector(Analyzer):
     def check_transition(self):
         prev_frame = self.sequence.next_frame()
         self.writer.write(prev_frame, 0)
+        yield 0, prev_frame
 
         frame_counter = InfiniteCounter()
         for frame_count in frame_counter.count():

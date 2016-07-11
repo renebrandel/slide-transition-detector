@@ -7,9 +7,9 @@ from extractor import ContentExtractor
 
 
 def execute(inputfile, extractor_out, detector_out=None, sorter_out=None):
-    detector = sources.ListSource(Detector(inputfile, outpath=detector_out).detect_slides())
-    sorter = sources.ListSource(SlideSorter(detector, outpath=sorter_out).sort())
-    extractor = ContentExtractor(sorter, output_dir=extractor_out)
+    detector = Detector(inputfile, outpath=detector_out)
+    sorter = SlideSorter(sources.ListSource(detector.detect_slides()), outpath=sorter_out)
+    extractor = ContentExtractor(sources.ListSource(sorter.sort()), output_dir=extractor_out)
     extractor.analyze()
 
 

@@ -4,7 +4,7 @@ import random
 from mediaoutput import IncrementalImageWriter
 from slides import SlideDataHelper
 
-class Aligner:
+class Aligner(object):
     
     def __init__(self, slides_descriptor, output, jump_probability, jump_range):
         self.originals = map(lambda x: x.img, SlideDataHelper(slides_descriptor).get_slides())

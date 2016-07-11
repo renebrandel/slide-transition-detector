@@ -1,41 +1,30 @@
-import subprocess
 import argparse
-import os
 
+from imgcomparison import AbsDiffHistComparator
+from levenshtein import fastMemLev
+from slides import SlideDataHelper
 from ui import ProgressController as pc
-from alignment import Aligner
 
-png_prefix = 'slide'
-FNULL = open(os.devnull, 'w')
+class Evaluator(object):
+    def __init__(self, source, reference):
+        assert len(source) > 0
+        assert len(reference) > 0
+        self.source = map(lambda x: x.img, SlideDataHelper(source).get_slides())
+        self.reference = map(lambda x: x.img, SlideDataHelper(reference).get_slides())
+    
+    def compare(self):
+        lev_dist = fastMemLev(self.source, self.reference, AbsDiffHistComparator(0.99).are_same)
+        print(len(self.reference))
+        print("levenshtein distance: %d" % lev_dist)
+        print("slide error rate: %0.4f" % (lev_dist / float(len(self.reference))))
 
-def convertToPNG(pdf):
-    foldername, _ = os.path.splitext(pdf)
-    foldername = os.path.basename(foldername)
-    foldername = os.path.join('PNG_Seq', foldername)
-    subprocess.call(['mkdir', '-p' ,foldername])
-    subprocess.call(['convert', pdf, foldername, os.path.join(foldername, png_prefix + '.png')], stdout=FNULL, stderr=subprocess.STDOUT)
-    return foldername
-
-def align(folder_desc):
-    foldername = os.path.basename(folder_desc)
-    foldername = os.path.join('aligned/', foldername)
-    outputname = os.path.join(foldername, "")
-    aligner = Aligner(folder_desc, outputname, 0.2, [1,5])
-    aligner.align_slides()
-    return foldername
-
-def stitch(sequence):
-    subprocess.call(['./stitcher.sh', '-p', os.path.join(sequence, ''), '-f', 'png', '-i', '0', '-o', sequence], stdout=FNULL, stderr=subprocess.STDOUT)
 
 if __name__ == "__main__":
-    Parser = argparse.ArgumentParser(description="Evaluation")
-    Parser.add_argument("slides", help="PDF files of the slides", nargs='+')
+    Parser = argparse.ArgumentParser(description="Evaluator")
+    Parser.add_argument("-d", "--sourceslides", help="slides that needs to be evaluated", default="slides/")
+    Parser.add_argument("-r", "--reference", help="reference slides that should be the proper outcome", nargs='?')
     Args = Parser.parse_args()
-    progress = pc("Generating Videos", len(Args.slides))
-    progress.start() 
-    counter = 0
-    for slide in Args.slides:
-        stitch(align(convertToPNG(slide)))
-        counter += 1
-        progress.update(counter)
-    progress.finish()
+
+    evaluator = Evaluator(Args.sourceslides, Args.reference)
+    evaluator.compare()
+  

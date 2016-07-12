@@ -14,6 +14,8 @@ from slides import SlideDataHelper
 from slides import convert_to_PIL
 from analyzer import Analyzer
 
+FNULL = open(os.devnull, 'w')
+
 def temp_file(suffix):
     ''' Returns a temporary file '''
     return tempfile.NamedTemporaryFile(prefix='tess_', suffix=suffix)
@@ -45,8 +47,8 @@ class ContentExtractor(Analyzer):
         processed = convert_to_PIL(processed)
         image = temp_file('.bmp')
         processed.save(image)
-        subprocess.call(['tesseract', '-l', self.lang, image.name, os.path.join(self.output_dir, '%d' % count), 'hocr'])
-        subprocess.call(['tesseract', '-l', self.lang, image.name, os.path.join(self.output_dir, '%d' % count)])
+        subprocess.call(['tesseract', '-l', self.lang, image.name, os.path.join(self.output_dir, '%d' % count), 'hocr'], stdout=FNULL, stderr=subprocess.STDOUT)
+        subprocess.call(['tesseract', '-l', self.lang, image.name, os.path.join(self.output_dir, '%d' % count)], stdout=FNULL, stderr=subprocess.STDOUT)
         return slide
 
 if __name__ == "__main__":

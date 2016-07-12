@@ -14,7 +14,7 @@ class SlideSorter(Analyzer):
     Sorts the slides according to their timestamp.
     """
 
-    def __init__(self, source, outpath=None, timetable_loc=None, file_format=".jpg", comparator=ic.AbsDiffHistComparator(0.99)):
+    def __init__(self, source, outpath=None, timetable_loc=None, file_format=".png", comparator=ic.AbsDiffHistComparator(0.99)):
         """
         Default initializer
         :param path: the path where the slides are located on disk

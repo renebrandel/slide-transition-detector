@@ -32,6 +32,10 @@ class ProgressController(object):
         assert self.progress is not None
         self.progress.update(i)
 
+    def increment(self, step=1):
+        assert self.progress is not None
+        self.progress.update(self.progress.currval + 1)
+
     def finish(self):
         """
         Stops updating the progress bar. And show an indication that

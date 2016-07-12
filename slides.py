@@ -7,6 +7,13 @@ from PIL import Image
 from abc import ABCMeta, abstractmethod
 
 
+def numericalSort(value):
+    numbers = re.compile(r'(\d+)')
+    parts = numbers.split(value)
+    parts[1::2] = map(int, parts[1::2])
+    return parts
+
+
 class Slide(object):
     """
     Represents a slide
@@ -48,13 +55,6 @@ class SlideDataHelper(object):
             self.imgreader = PILReader()
         else:
             self.imgreader = OpenCVReader()
-        self.numbers = re.compile(r'(\d+)')
-
-
-    def numericalSort(self, value):
-        parts = self.numbers.split(value)
-        parts[1::2] = map(int, parts[1::2])
-        return parts
 
     def get_slides(self):
         """
@@ -63,7 +63,7 @@ class SlideDataHelper(object):
         :return: The slides stored on disk as list of "Slide" objects.
         """
         slides = []
-        for filename in sorted(os.listdir(self.path), key=self.numericalSort):
+        for filename in sorted(os.listdir(self.path), key=numericalSort):
             file_path = os.path.join(self.path, filename)
             _, ext = os.path.splitext(file_path)
             if not is_image(ext):

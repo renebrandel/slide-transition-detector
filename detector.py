@@ -45,7 +45,7 @@ class InfiniteCounter(object):
 
 class Detector(Analyzer):
 
-    def __init__(self, device, outpath=None, fileformat=".jpg"):
+    def __init__(self, device, outpath=None, fileformat=".png"):
         cap = cv2.VideoCapture(sanitize_device(device))
         self.sequence = timeline.Timeline(cap)
         self.writer = mediaoutput.NullWriter()
